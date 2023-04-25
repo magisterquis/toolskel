@@ -1,0 +1,71 @@
+{{- /*
+     * parallel.tmpl
+     * Parallel task executor
+     * By J. Stuart McMurray
+     * Created 20230221
+     * Last Modified 20230421
+     */ -}}
+{{ define "description" }}Parallel task executor{{ end }}
+
+{{ define "imports" }}{{ (.WithImports "sync").ImportsBlock }}{{ end }}
+
+{{ define "types" }}
+// Task contains the information necessary to accomplish a task.
+type Task struct{}
+{{ end }}
+
+{{ define "flags" }}
+		nPar = flag.Uint(
+			"parallel",
+			10,
+			"Parallel task execution `count`",
+		)
+{{- end }}
+
+{{ define "body" -}}
+	/* Start some task executors. */
+	var (
+		ch = make(chan Task)
+		wg sync.WaitGroup
+	)
+	for i := uint(0); i < *nPar; i++ {
+		wg.Add(1)
+		go taskExecutor(ch, &wg)
+	}
+
+	/* Send the tasks to be executed. */
+	tasks, err := getTasks()
+	if nil != err {
+		log.Fatalf("Error getting tasks: %s", err)
+	}
+	for _, task := range tasks {
+		ch <- task
+	}
+
+	/* Wait for the executors to finish executing. */
+	close(ch)
+	wg.Wait()
+{{- end }}
+
+{{ define "functions" }}
+
+/* getTasks returns a list of tasks to execute. */
+func getTasks() ([]Task, error) {
+	return make([]Task, 0), nil
+}
+
+/* taskExecutor executes the tasks sent on ch. */
+func taskExecutor(ch <-chan Task, wg *sync.WaitGroup) {
+	defer wg.Done()
+	for t := range ch {
+		executeTask(t)
+	}
+}
+
+/* executeTask executes a single task. */
+func executeTask(t Task) { {{- if .SummaryCount }}
+	defer NDone.Add(1){{ end }}
+	log.Printf("Executing a task")
+}
+{{- end }}
+{{/* vim: set filetype=gotexttmpl noexpandtab smartindent: */ -}}

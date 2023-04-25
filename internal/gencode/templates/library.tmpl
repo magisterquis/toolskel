@@ -1,0 +1,16 @@
+{{- /*
+     * library.tmpl
+     * Just the headers, for a library.
+     * By J. Stuart McMurray
+     * Created 20230421
+     * Last Modified 20230418
+     */ -}}
+{{ define "description" }}Just headers, for a library{{ end }}
+{{- template "headers" (.WithSet "PkgType" "Package") }}
+
+import (
+	"fmt"
+)
+
+func main() { fmt.Printf("Delete this, as this is a library") }
+{{- /* vim: set filetype=gotexttmpl noexpandtab smartindent: */}}

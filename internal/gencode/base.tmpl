@@ -1,0 +1,79 @@
+{{- /*
+     * base.tmpl
+     * Base template, with bits inserted for tool types
+     * By J. Stuart McMurray
+     * Created 20230421
+     * Last Modified 20230418
+     */ -}}
+{{- block "headers" . -}}
+// {{ or .PkgType "Program" }} {{ .CmdDesc }}
+package {{ if .PkgType }}{{ .Name }}{{ else }}main{{ end }}
+
+/*
+ * {{ .Name }}.go
+ * {{ .CmdDesc }}
+ * By {{ .Author }}
+ * Created {{ .Today }}
+ * Last Modified {{ .Today }}
+ */
+{{- end }}
+
+{{ $x := or (and .SummaryCount "sync/atomic") "" -}}
+{{ block "imports" (.WithImports "flag" "fmt" "log" "os" "time" $x) }}{{ .ImportsBlock }}{{ end }}
+
+var (
+	// ProgramStart notes when the program has started for printing the
+	// elapsed time when the program ends.
+	ProgramStart = time.Now()
+        {{- if .SummaryCount }}
+
+	// NDone keeps track of the number of things we've done.
+	NDone atomic.Uint64{{ end }}
+)
+{{ block "types" . }}{{ end }}
+func main() {
+{{- if .TagLog }}
+	/* Tag log messages with argv[0]. */
+	log.SetPrefix("[" + os.Args[0] + "] ")
+{{ end }}
+	/* Command-line flags. */
+	var (
+		noSummary = flag.Bool(
+			"no-summary",
+			false,
+			"Don't print a summary on exit",
+		){{ block "flags" . }}{{ end }}
+	)
+	flag.Usage = func() {
+		fmt.Fprintf(
+			os.Stderr,
+			`Usage: %s [options]
+
+{{ .CmdDesc }}
+
+Options:
+`,
+			os.Args[0],
+		)
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	{{ block "body" . }}/* TODO: Meat and Potatoes. */{{ end }}
+
+	/* All done. */
+	if !*noSummary {
+		log.Printf(
+{{- if .SummaryCount }}
+			"Done.  Finished %d in %s.",
+			NDone.Load(),
+{{- else }}
+			"Done in %s.",
+{{- end }}
+			time.Since(ProgramStart).Round(time.Millisecond),
+		)
+	}
+}
+
+{{- block "functions" . }}{{ end }}
+{{- /* vim: set filetype=gotexttmpl noexpandtab smartindent: */}}
