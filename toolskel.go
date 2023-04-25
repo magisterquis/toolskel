@@ -79,7 +79,6 @@ Options:
 	/* Fill in the rest of the data for the template. */
 	data := gencode.Data{
 		Name:         flag.Arg(0),
-		Description:  description,
 		Author:       *author,
 		TagLog:       *tagLog,
 		SummaryCount: *summaryCount,
