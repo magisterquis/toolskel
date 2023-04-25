@@ -2,7 +2,10 @@ Tool Skeleton Generator
 =======================
 Generates boilerplate for small tools written in Go.
 
-Expected userbase size: 1
+Expected userbase size: `1`
+
+Example output can be found in
+[`internal/gencode/tests`](.internal/gencode/tests).
 
 Tool Types
 ----------
@@ -48,12 +51,15 @@ vi ./tool.go
 Building and Testing
 --------------------
 In most cases, `go install` should be sufficient.  The [Makefile](./Makefile)
-is intended for use during development.  The Makefile assumes that
+is only intended for use during development and assumes that
 [`goimports`](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) and 
 [`Staticcheck`](https://staticcheck.io) are available.
 
 Adding Templates
 ----------------
+Adding a new tool type takes the form of a template which overrides blocks in
+the base template.
+
 1.  Add a template to
     [`internal/gencode/templates`](./internal/gencode/templates) which should
     replace blocks in
@@ -61,7 +67,13 @@ Adding Templates
     update the `description` block.
 2.  Add a testcase or three to
     [`internal/gencode/toolskel_test.go`](.internal/gencode/toolskel_test.go).
-3.  Generate a test copy of the output with something like `go run . -author ''
-    -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go`.  The name
-    should be the same as Testcases[yours].name, with `s,/,_,g`.
-4.  Run the tests with `make tests`
+3.  Generate a test copy of the output with something like
+    ```sh
+go run . -author '' -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go
+    ```
+    The name should be the same as `Testcases[yours].name`, with slashes
+    replaced with underscores.
+4.  Run the tests with
+    ```sh
+make tests
+    ```
