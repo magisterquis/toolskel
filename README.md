@@ -65,15 +65,15 @@ the base template.
     replace blocks in
     [`internal/gencode/base.tmpl`](./internal/gencode/base.tmpl).  Make sure to
     update the `description` block.
-2.  Add a testcase or three to
+2.  Add a testcase or three to `TestCases` in
     [`internal/gencode/toolskel_test.go`](.internal/gencode/toolskel_test.go).
 3.  Generate a test copy of the output with something like
     ```sh
-go run . -author '' -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go
+    go run . -author '' -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go
     ```
     The name should be the same as `Testcases[yours].name`, with slashes
     replaced with underscores.
 4.  Run the tests with
     ```sh
-make tests
+    make tests
     ```
