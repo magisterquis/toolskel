@@ -62,6 +62,6 @@ Adding Templates
 2.  Add a testcase or three to
     [`internal/gencode/toolskel_test.go`](.internal/gencode/toolskel_test.go).
 3.  Generate a test copy of the output with something like `go run . -author ''
-    -no-date -type $NEWTYPE >> internal/gencode/tests/newtype.go`.  The name
+    -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go`.  The name
     should be the same as Testcases[yours].name, with `s,/,_,g`.
 4.  Run the tests with `make tests`
