@@ -65,6 +65,7 @@ Adding Templates
 ```sh
 go run . -author '' -no-date -type $NEWTYPE >> internal/gencode/tests/newtype.go
 ```
+
     The name should be the same as Testcases[yours].name, with `s,/,_,g`.
 4.  Run the tests with
 ```sh
