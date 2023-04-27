@@ -37,6 +37,8 @@ Options:
     	Tag log output with argv[0]
   -type type
     	Tool type (see -list-types) (default "simple")
+  -verbose-flag
+    	Add a -verbose flag
 ```
 
 Quickstart
