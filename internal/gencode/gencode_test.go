@@ -1,8 +1,8 @@
 package gencode
 
 /*
- * toolskel_test.go
- * Tests for toolskel.go
+ * gencode_test.go
+ * Tests for gencode.go
  * By J. Stuart McMurray
  * Created 20230415
  * Last Modified 20230427

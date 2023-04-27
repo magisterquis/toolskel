@@ -3,11 +3,11 @@
 package gencode
 
 /*
- * toolskel_goimports_test.go
- * GoImports Tests for toolskel.go
+ * gencode_goimports_test.go
+ * GoImports Tests for gencode.go
  * By J. Stuart McMurray
  * Created 20230415
- * Last Modified 20230425
+ * Last Modified 20230427
  */
 
 import (
