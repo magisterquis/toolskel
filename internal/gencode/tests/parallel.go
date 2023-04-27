@@ -19,8 +19,8 @@ import (
 )
 
 var (
-	// ProgramStart notes when the program has started for printing the
-	// elapsed time when the program ends.
+	/* ProgramStart notes when the program has started for printing the
+	elapsed time when the program ends. */
 	ProgramStart = time.Now()
 )
 

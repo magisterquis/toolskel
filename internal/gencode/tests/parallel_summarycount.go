@@ -20,11 +20,11 @@ import (
 )
 
 var (
-	// ProgramStart notes when the program has started for printing the
-	// elapsed time when the program ends.
+	/* ProgramStart notes when the program has started for printing the
+	elapsed time when the program ends. */
 	ProgramStart = time.Now()
 
-	// NDone keeps track of the number of things we've done.
+	/* NDone keeps track of the number of things we've done. */
 	NDone atomic.Uint64
 )
 

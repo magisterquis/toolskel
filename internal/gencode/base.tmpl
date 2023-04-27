@@ -22,12 +22,12 @@ package {{ if .PkgType }}{{ .Name }}{{ else }}main{{ end }}
 {{ block "imports" (.WithImports "flag" "fmt" "log" "os" "time" $x) }}{{ .ImportsBlock }}{{ end }}
 
 var (
-	// ProgramStart notes when the program has started for printing the
-	// elapsed time when the program ends.
+	/* ProgramStart notes when the program has started for printing the
+	elapsed time when the program ends. */
 	ProgramStart = time.Now()
         {{- if .SummaryCount }}
 
-	// NDone keeps track of the number of things we've done.
+	/* NDone keeps track of the number of things we've done. */
 	NDone atomic.Uint64{{ end }}
 	{{- if .Verbose }}
 
