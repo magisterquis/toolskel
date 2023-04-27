@@ -6,7 +6,7 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20230425
+ * Last Modified 20230427
  */
 
 import (
@@ -54,6 +54,11 @@ func main() {
 			false,
 			"Tag log output with argv[0]",
 		)
+		addVerbose = flag.Bool(
+			"verbose-flag",
+			false,
+			"Add a -verbose flag",
+		)
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(
@@ -82,6 +87,7 @@ Options:
 		Author:       *author,
 		TagLog:       *tagLog,
 		SummaryCount: *summaryCount,
+		Verbose:      *addVerbose,
 	}
 	if "" != flag.Arg(1) {
 		data.Description = strings.Join(flag.Args()[1:], " ")

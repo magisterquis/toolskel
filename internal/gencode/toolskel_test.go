@@ -5,7 +5,7 @@ package gencode
  * Tests for toolskel.go
  * By J. Stuart McMurray
  * Created 20230415
- * Last Modified 20230425
+ * Last Modified 20230427
  */
 
 import (
@@ -48,6 +48,17 @@ var TestCases = []struct {
 		TagLog: true,
 	},
 }, {
+	name: "simple/verbose",
+	data: Data{
+		Verbose: true,
+	},
+}, {
+	name: "simple/summarycountverbose",
+	data: Data{
+		SummaryCount: true,
+		Verbose:      true,
+	},
+}, {
 	name:  "parallel",
 	tType: "parallel",
 }, {
@@ -55,6 +66,12 @@ var TestCases = []struct {
 	tType: "parallel",
 	data: Data{
 		SummaryCount: true,
+	},
+}, {
+	name:  "parallel/verbose",
+	tType: "parallel",
+	data: Data{
+		Verbose: true,
 	},
 }, {
 	name: "library",

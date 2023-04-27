@@ -3,7 +3,7 @@
      * Base template, with bits inserted for tool types
      * By J. Stuart McMurray
      * Created 20230421
-     * Last Modified 20230418
+     * Last Modified 20230427
      */ -}}
 {{- block "headers" . -}}
 // {{ or .PkgType "Program" }} {{ .CmdDesc }}
@@ -29,6 +29,10 @@ var (
 
 	// NDone keeps track of the number of things we've done.
 	NDone atomic.Uint64{{ end }}
+	{{- if .Verbose }}
+
+	/* Verbosef wil be a no-op if -verbose isn't given. */
+	Verbosef = log.Printf{{ end }}
 )
 {{ block "types" . }}{{ end }}
 func main() {
@@ -42,7 +46,14 @@ func main() {
 			"no-summary",
 			false,
 			"Don't print a summary on exit",
-		){{ block "flags" . }}{{ end }}
+		)
+		{{- if .Verbose }}
+		verbOn = flag.Bool(
+			"verbose",
+			false,
+			"Enable verbose logging",
+		){{ end }}
+		{{- block "flags" . }}{{ end }}
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(
@@ -58,6 +69,12 @@ Options:
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+	{{- if .Verbose }}
+
+	/* Work out verbose logging. */
+	if !*verbOn {
+		Verbosef = func(string, ...any) {}
+	}{{ end }}
 
 	{{ block "body" . }}/* TODO: Meat and Potatoes. */{{ end }}
 

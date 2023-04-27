@@ -5,7 +5,7 @@ package gencode
  * Data we pass to templates
  * By J. Stuart McMurray
  * Created 20230418
- * Last Modified 20230425
+ * Last Modified 20230427
  */
 
 import (
@@ -34,8 +34,8 @@ type Data struct {
 	SummaryCount bool                /* Print count with summary. */
 	TagLog       bool                /* Tag logs with argv[0]. */
 	PkgType      string              /* Package or Program (default)  */
+	Verbose      bool                /* -verbose */
 	Imports      map[string]struct{} /* Imported packages. */
-
 }
 
 // SetDefaults makes sure every field of Data has a default value.
