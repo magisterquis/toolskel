@@ -5,7 +5,7 @@ package gencode
  * Data we pass to templates
  * By J. Stuart McMurray
  * Created 20230418
- * Last Modified 20230427
+ * Last Modified 20230602
  */
 
 import (
@@ -55,7 +55,7 @@ func (d Data) copy() Data {
 }
 
 // CmdDesc gets the command name and description, separated with a ": ".
-func (d Data) CmdDesc() string { return d.Name + ": " + d.Description }
+func (d Data) CmdDesc() string { return d.Name + " - " + d.Description }
 
 // WithImports returns a copy of d with added imports.
 func (d Data) WithImports(imports ...string) Data {

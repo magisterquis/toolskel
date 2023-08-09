@@ -3,7 +3,7 @@
      * Base template, with bits inserted for tool types
      * By J. Stuart McMurray
      * Created 20230421
-     * Last Modified 20230427
+     * Last Modified 20230601
      */ -}}
 {{- block "headers" . -}}
 // {{ or .PkgType "Program" }} {{ .CmdDesc }}
@@ -11,7 +11,7 @@ package {{ if .PkgType }}{{ .Name }}{{ else }}main{{ end }}
 
 /*
  * {{ .Name }}.go
- * {{ .CmdDesc }}
+ * {{/*{{ .CmdDesc }} */}}{{ .Description }}
  * By {{ .Author }}
  * Created {{ .Today }}
  * Last Modified {{ .Today }}
@@ -60,7 +60,7 @@ func main() {
 			os.Stderr,
 			`Usage: %s [options]
 
-{{ .CmdDesc }}
+{{/*{{ .CmdDesc }} */}}{{ .Description }}
 
 Options:
 `,
