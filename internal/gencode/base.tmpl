@@ -11,7 +11,7 @@ package {{ if .PkgType }}{{ .Name }}{{ else }}main{{ end }}
 
 /*
  * {{ .Name }}.go
- * {{/*{{ .CmdDesc }} */}}{{ .Description }}
+ * {{ .Description }}
  * By {{ .Author }}
  * Created {{ .Today }}
  * Last Modified {{ .Today }}
@@ -60,7 +60,7 @@ func main() {
 			os.Stderr,
 			`Usage: %s [options]
 
-{{/*{{ .CmdDesc }} */}}{{ .Description }}
+{{ .Description }}
 
 Options:
 `,
