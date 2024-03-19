@@ -5,7 +5,7 @@ package gencode
  * Testing whether two files are the same
  * By J. Stuart McMurray
  * Created 20230415
- * Last Modified 20230425
+ * Last Modified 20240319
  */
 
 import (
@@ -73,6 +73,14 @@ func TestDiff(t *testing.T) {
 		a:    "a\nb\nc\nd\ne\nf\ng\nh\ni\nj\n",
 		b:    "a\nb\nc\nd\ne\nf\ng\nh\ni\nx\n",
 		want: 10,
+	}, {
+		a:    "",
+		b:    "a\nb\nc\nd\ne\nf\ng\nh\ni\nx\n",
+		want: 1,
+	}, {
+		a:    "a\nb\nc\nd\ne\nf\ng\nh\ni\nx\n",
+		b:    "",
+		want: 1,
 	}} {
 		c := c /* :S */
 
