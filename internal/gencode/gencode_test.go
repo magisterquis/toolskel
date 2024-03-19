@@ -21,11 +21,11 @@ import (
 
 // testWants contains the contents of the tests/ directory
 //
-//go:embed tests/*.go
+//go:embed _tests/*.go
 var testWants embed.FS
 
 // testWantsDir is the directory in testWants with the files for TestCases.
-const testWantsDir = "tests"
+const testWantsDir = "_tests"
 
 // TestCases are common test cases for various tests.  Each test should have
 // a corresponding file in tests/ named after .name, with /'s replaced by
