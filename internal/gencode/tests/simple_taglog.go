@@ -1,9 +1,9 @@
-// Program cooltool: A cool program
+// Program cooltool - A cool program
 package main
 
 /*
  * cooltool.go
- * cooltool: A cool program
+ * A cool program
  * By MysteryDev
  * Created in the past
  * Last Modified in the past
@@ -40,7 +40,7 @@ func main() {
 			os.Stderr,
 			`Usage: %s [options]
 
-cooltool: A cool program
+A cool program
 
 Options:
 `,

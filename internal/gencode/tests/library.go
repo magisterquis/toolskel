@@ -1,9 +1,9 @@
-// Package main: A cool program
+// Package main - A cool program
 package main
 
 /*
  * main.go
- * main: A cool program
+ * A cool program
  * By MysteryDev
  * Created in the past
  * Last Modified in the past
