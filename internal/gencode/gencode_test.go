@@ -5,7 +5,7 @@ package gencode
  * Tests for gencode.go
  * By J. Stuart McMurray
  * Created 20230415
- * Last Modified 20230427
+ * Last Modified 20240419
  */
 
 import (
@@ -36,45 +36,45 @@ var TestCases = []struct {
 	data  Data
 	want  []byte
 }{{
-	name: "simple",
+	name: "simple.go",
 }, {
-	name: "simple/summarycount",
+	name: "simple/summarycount.go",
 	data: Data{
 		SummaryCount: true,
 	},
 }, {
-	name: "simple/taglog",
+	name: "simple/taglog.go",
 	data: Data{
 		TagLog: true,
 	},
 }, {
-	name: "simple/verbose",
+	name: "simple/verbose.go",
 	data: Data{
 		Verbose: true,
 	},
 }, {
-	name: "simple/summarycountverbose",
+	name: "simple/summarycountverbose.go",
 	data: Data{
 		SummaryCount: true,
 		Verbose:      true,
 	},
 }, {
-	name:  "parallel",
+	name:  "parallel.go",
 	tType: "parallel",
 }, {
-	name:  "parallel/summarycount",
+	name:  "parallel/summarycount.go",
 	tType: "parallel",
 	data: Data{
 		SummaryCount: true,
 	},
 }, {
-	name:  "parallel/verbose",
+	name:  "parallel/verbose.go",
 	tType: "parallel",
 	data: Data{
 		Verbose: true,
 	},
 }, {
-	name: "library",
+	name: "library.go",
 	data: Data{
 		Name: "main", /* For testing. */
 	},
@@ -93,7 +93,7 @@ func init() {
 		/* Get the file. */
 		fn := filepath.Join(
 			testWantsDir,
-			strings.Replace(c.name, "/", "_", -1)+".go",
+			strings.Replace(c.name, "/", "_", -1),
 		)
 		c.want, err = testWants.ReadFile(fn)
 		if nil != err {
