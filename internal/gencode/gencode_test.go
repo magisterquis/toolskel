@@ -21,7 +21,7 @@ import (
 
 // testWants contains the contents of the tests/ directory
 //
-//go:embed _tests/*.go
+//go:embed _tests
 var testWants embed.FS
 
 // testWantsDir is the directory in testWants with the files for TestCases.
@@ -79,6 +79,9 @@ var TestCases = []struct {
 		Name: "main", /* For testing. */
 	},
 	tType: "library",
+}, {
+	name:  "Makefile",
+	tType: "makefile",
 }}
 
 // init populates TestCases's data fields.
@@ -106,7 +109,6 @@ func init() {
 
 func TestGenCode(t *testing.T) {
 	for _, c := range TestCases {
-		c := c /* :( */
 		/* If there's no known good for this one, skip it. */
 		if 0 == len(c.want) {
 			continue
@@ -156,21 +158,31 @@ func TestWantBuild(t *testing.T) {
 				t.Errorf("Error writing to %s: %s", fn, err)
 				return
 			}
-			if _, err := combinedOutput(
-				t,
-				td,
-				"go mod init tstest",
-			); nil != err {
-				t.Errorf("Error adding go.mod: %s", err)
-				return
-			}
-			if _, err := combinedOutput(
-				t,
-				td,
-				"go run . -h",
-			); nil != err {
-				t.Errorf("Build failed with error: %s", err)
-				return
+
+			/* If we've got a Go file, try to build it. */
+			if strings.HasSuffix(de.Name(), ".go") {
+				if _, err := combinedOutput(
+					t,
+					td,
+					"go mod init tstest",
+				); nil != err {
+					t.Errorf(
+						"Error adding go.mod: %s",
+						err,
+					)
+					return
+				}
+				if _, err := combinedOutput(
+					t,
+					td,
+					"go run . -h",
+				); nil != err {
+					t.Errorf(
+						"Build failed with error: %s",
+						err,
+					)
+					return
+				}
 			}
 		})
 	}
@@ -191,7 +203,7 @@ func (err combinedOutputError) Error() string {
 	if 0 == len(err.Output) {
 		return err.Error()
 	}
-	return fmt.Sprintf("%s\nOutput:\n%s)", err.Err, err.Output)
+	return fmt.Sprintf("%s\nOutput:\n%s", err.Err, err.Output)
 }
 
 // combinedOutput returns the output of running the command in a shell in the

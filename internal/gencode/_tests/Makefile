@@ -1,8 +1,8 @@
 # Makefile
-# Build toolskel
-# By J. Stuart McMurray
-# Created 20240319
-# Last Modified 20240319
+# Build cooltool
+# By MysteryDev
+# Created in the past
+# Last Modified in the past
 
 BINNAME       != basename $$(pwd)
 BUILDFLAGS     = -trimpath -ldflags "-w -s"

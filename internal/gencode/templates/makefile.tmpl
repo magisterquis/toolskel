@@ -1,8 +1,16 @@
+{{- /*
+     * makefile.tmpl
+     * Generic Go makefile
+     * By J. Stuart McMurray
+     * Created 202404191
+     * Last Modified 202404191
+     */ -}}
+{{ define "description" }}Generic Go BSD Makefile{{ end -}}
 # Makefile
-# Build toolskel
-# By J. Stuart McMurray
-# Created 20240319
-# Last Modified 20240319
+# Build {{ .Name }}
+# By {{ .Author }}
+# Created {{ .Today }}
+# Last Modified {{ .Today }}
 
 BINNAME       != basename $$(pwd)
 BUILDFLAGS     = -trimpath -ldflags "-w -s"
@@ -38,3 +46,4 @@ install:
 
 clean:
 	rm -f ${BINNAME}
+{{- /* vim: set filetype=gotexttmpl noexpandtab smartindent: */}}
