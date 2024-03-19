@@ -5,10 +5,12 @@ package gencode
  * Tests for data.go
  * By J. Stuart McMurray
  * Created 20230418
- * Last Modified 20230425
+ * Last Modified 20240419
  */
 
 import (
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 	"testing"
@@ -58,5 +60,28 @@ func TestDataImportsBlock(t *testing.T) {
 				t.Errorf("got:\n%s", got)
 			}
 		})
+	}
+}
+
+func TestDataSetDefaults(t *testing.T) {
+	var data Data
+	data.SetDefaults()
+
+	wd, err := os.Getwd()
+	if nil != err {
+		t.Fatalf("Error getting current directory: %s", err)
+	}
+	want := filepath.Base(wd)
+
+	if got := data.Name; got != want {
+		t.Errorf(
+			"Incorrect default name\n"+
+				" cwd: %s\n"+
+				" got: %s\n"+
+				"want: %s\n",
+			wd,
+			got,
+			want,
+		)
 	}
 }

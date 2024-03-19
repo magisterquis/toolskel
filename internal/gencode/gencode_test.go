@@ -114,6 +114,12 @@ func TestGenCode(t *testing.T) {
 		t.Run(c.name, func(t *testing.T) {
 			t.Parallel()
 			var buf bytes.Buffer
+			/* If we don't have a tool name, use the default
+			default, so as to not have to fiddle about with test
+			directories. */
+			if "" == c.data.Name {
+				c.data.Name = defaultProgramName
+			}
 			if err := Generate(&buf, c.tType, c.data); nil != err {
 				t.Errorf("error: %s", err)
 				return

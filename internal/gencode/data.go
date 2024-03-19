@@ -5,16 +5,18 @@ package gencode
  * Data we pass to templates
  * By J. Stuart McMurray
  * Created 20230418
- * Last Modified 20230602
+ * Last Modified 20240419
  */
 
 import (
 	"fmt"
+	"log"
+	"maps"
+	"os"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"strings"
-
-	"golang.org/x/exp/maps"
 )
 
 // The following default values are compile-time settable.
@@ -40,7 +42,17 @@ type Data struct {
 
 // SetDefaults makes sure every field of Data has a default value.
 func (d *Data) SetDefaults() {
-	setDefault(&d.Name, defaultProgramName)
+	/* Default name is current directory's base name, or cooltool if
+	that fails. */
+	pn, err := os.Getwd()
+	if nil != err {
+		log.Printf("Error determining current directory: %s", err)
+		pn = defaultProgramName
+	} else {
+		pn = filepath.Base(pn)
+	}
+
+	setDefault(&d.Name, pn)
 	setDefault(&d.Description, defaultDescription)
 	setDefault(&d.Author, defaultAuthorName)
 	setDefault(&d.Today, "in the past")
