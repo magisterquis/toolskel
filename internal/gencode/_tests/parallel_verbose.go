@@ -30,7 +30,9 @@ var (
 // Task contains the information necessary to accomplish a task.
 type Task struct{}
 
-func main() {
+func main() { os.Exit(rmain()) }
+
+func rmain() int {
 	/* Command-line flags. */
 	var (
 		noSummary = flag.Bool(
@@ -99,6 +101,8 @@ Options:
 			time.Since(ProgramStart).Round(time.Millisecond),
 		)
 	}
+
+	return 0
 }
 
 /* getTasks returns a list of tasks to execute. */

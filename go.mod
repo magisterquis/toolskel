@@ -1,5 +1,5 @@
 module github.com/magisterquis/toolskel
 
-go 1.22
+go 1.22.1
 
-require golang.org/x/exp v0.0.0-20240318143956-a85f2c67cd81
+require golang.org/x/exp v0.0.0-20241108190413-2d47ceb2692f

@@ -35,7 +35,9 @@ var (
 	Verbosef = log.Printf{{ end }}
 )
 {{ block "types" . }}{{ end }}
-func main() {
+func main() { os.Exit(rmain()) }
+
+func rmain() int {
 {{- if .TagLog }}
 	/* Tag log messages with argv[0]. */
 	log.SetPrefix("[" + os.Args[0] + "] ")
@@ -90,6 +92,8 @@ Options:
 			time.Since(ProgramStart).Round(time.Millisecond),
 		)
 	}
+
+	return 0
 }
 
 {{- block "functions" . }}{{ end }}

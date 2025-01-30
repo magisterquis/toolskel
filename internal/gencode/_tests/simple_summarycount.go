@@ -27,7 +27,9 @@ var (
 	NDone atomic.Uint64
 )
 
-func main() {
+func main() { os.Exit(rmain()) }
+
+func rmain() int {
 	/* Command-line flags. */
 	var (
 		noSummary = flag.Bool(
@@ -61,4 +63,6 @@ Options:
 			time.Since(ProgramStart).Round(time.Millisecond),
 		)
 	}
+
+	return 0
 }

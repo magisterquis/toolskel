@@ -23,7 +23,9 @@ var (
 	ProgramStart = time.Now()
 )
 
-func main() {
+func main() { os.Exit(rmain()) }
+
+func rmain() int {
 	/* Tag log messages with argv[0]. */
 	log.SetPrefix("[" + os.Args[0] + "] ")
 
@@ -59,4 +61,6 @@ Options:
 			time.Since(ProgramStart).Round(time.Millisecond),
 		)
 	}
+
+	return 0
 }
