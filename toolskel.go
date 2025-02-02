@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"slices"
 	"strings"
 	"time"
 
@@ -180,73 +181,84 @@ Options:
 	}
 
 	/* Generate ALL the things. */
-	tool := cmp.Or(params.Name, gencode.DefaultName)
-	for _, f := range []struct {
+	type fileConf struct {
 		do   bool
 		name string
 		gen  gencode.Generator
-	}{{
-		do:   *createProgram,
-		name: tool + ".go",
-		gen:  params.Program,
-	}, {
-		do:   *createLibrary,
-		name: tool + ".go",
-		gen:  params.Library,
-	}, {
-		do:   *createMakefile,
-		name: MakefileName,
-		gen:  params.Makefile,
-	}, {
-		do:   *createStaticcheck,
-		name: StaticcheckName,
-		gen:  params.Staticcheck,
-	}, {
-		do:   *createProgramReadme,
-		name: ReadmeName,
-		gen:  params.Programreadme,
-	}, {
-		do:   *createLibraryReadme,
-		name: ReadmeName,
-		gen:  params.Libraryreadme,
-	}, {
-		do:   *createGitignore,
-		name: GitignoreName,
-		gen:  params.Gitignore,
-	}} {
+	}
+	var (
+		tool  = cmp.Or(params.Name, gencode.DefaultName)
+		confs = []fileConf{{
+			do:   *createProgram,
+			name: tool + ".go",
+			gen:  params.Program,
+		}, {
+			do:   *createLibrary,
+			name: tool + ".go",
+			gen:  params.Library,
+		}, {
+			do:   *createMakefile,
+			name: MakefileName,
+			gen:  params.Makefile,
+		}, {
+			do:   *createStaticcheck,
+			name: StaticcheckName,
+			gen:  params.Staticcheck,
+		}, {
+			do:   *createProgramReadme,
+			name: ReadmeName,
+			gen:  params.Programreadme,
+		}, {
+			do:   *createLibraryReadme,
+			name: ReadmeName,
+			gen:  params.Libraryreadme,
+		}, {
+			do:   *createGitignore,
+			name: GitignoreName,
+			gen:  params.Gitignore,
+		}}
+	)
+	/* Make sure we actually have something to do. */
+	if !slices.ContainsFunc(confs, func(fc fileConf) bool {
+		return fc.do
+	}) {
+		log.Fatalf("Need something to generate")
+	}
+	/* Generate ALL the files. */
+	for _, fc := range confs {
 		/* Easy if we're not generating this one. */
-		if !f.do {
+		if !fc.do {
 			continue
 		}
 		/* Writing to a file is easy. */
 		if !*toTxtar {
 			if err := params.ToFile(
-				f.name,
-				f.gen,
+				fc.name,
+				fc.gen,
 				*overwrite,
 			); nil != err {
 				log.Fatalf(
 					"Error creating %s: %s",
-					f.name,
+					fc.name,
 					err,
 				)
 			}
 			if !*quiet {
-				log.Printf("Created %s", f.name)
+				log.Printf("Created %s", fc.name)
 			}
 			continue
 		}
 		/* Update the archive. */
 		var (
-			tf  = txtar.File{Name: f.name}
+			tf  = txtar.File{Name: fc.name}
 			err error
 		)
-		if tf.Data, err = f.gen(); nil != err {
-			log.Fatalf("Error generating %s: %s", f.name, err)
+		if tf.Data, err = fc.gen(); nil != err {
+			log.Fatalf("Error generating %s: %s", fc.name, err)
 		}
 		ta.Files = append(ta.Files, tf)
 		if !*quiet {
-			log.Printf("Generated %s", f.name)
+			log.Printf("Generated %s", fc.name)
 		}
 	}
 
