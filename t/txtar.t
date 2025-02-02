@@ -17,8 +17,9 @@ test_gen() {(
         tap_plan 4
         # Generate the archive
         GOT=$(go run . \
-                -author "test_author" \
                 "-$1" \
+                -author "test_author" \
+                -name "" \
                 -quiet \
                 -today 25251225 \
                 -txtar)

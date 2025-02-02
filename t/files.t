@@ -23,9 +23,10 @@ test_gen() {(
 
         # Generate the files
         go run . \
-                -dir "$TD" \
-                -author "test_author" \
                 "-$1" \
+                -author "test_author" \
+                -dir "$TD" \
+                -name "" \
                 -quiet \
                 -today 25251225
         tap_ok $? "Ran successfully" "$0" $LINENO

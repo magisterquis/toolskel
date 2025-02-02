@@ -83,6 +83,11 @@ func main() {
 			"Same as -library -library-readme -staticcheck",
 		)
 		/* Other options. */
+		name = flag.String(
+			"name",
+			defaultName(),
+			"Project `name`",
+		)
 		dir = flag.String(
 			"dir",
 			".",
@@ -117,7 +122,7 @@ func main() {
 	flag.Usage = func() {
 		fmt.Fprintf(
 			os.Stderr,
-			`Usage: %s [options] [name [description...]]
+			`Usage: %s [options] [description...]
 
 Generates boilerplate Go projects.  Go source files will be named name.go.
 
@@ -163,12 +168,10 @@ Options:
 
 	/* Generation parameters. */
 	params := gencode.Params{
-		Name:   flag.Arg(0),
-		Author: *author,
-		Today:  *today,
-	}
-	if 2 <= flag.NArg() {
-		params.Description = strings.Join(flag.Args()[1:], " ")
+		Name:        *name,
+		Description: strings.Join(flag.Args(), " "),
+		Author:      *author,
+		Today:       *today,
 	}
 
 	/* Prep a txtar archive, if we're doing that. */
@@ -283,4 +286,16 @@ func defaultUsername() string {
 		}
 	}
 	return ""
+}
+
+// defaultName returns the basename of the current directory or, if
+// unavailable, gencode.DefaultName.
+func defaultName() string {
+	wd, err := os.Getwd()
+	if nil != err {
+		log.Printf("Unable to get current directory: %s", err)
+		return gencode.DefaultName
+	}
+	return filepath.Base(wd)
+
 }

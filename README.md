@@ -28,7 +28,7 @@ Quickstart
 Usage
 -----
 ```
-Usage: toolskel [options] [name [description...]]
+Usage: toolskel [options] [description...]
 
 Generates boilerplate Go projects.  Go source files will be named name.go.
 
@@ -45,6 +45,8 @@ Options:
     	Generate a README.md suitable for a library
   -makefile
     	Generate a Makefile
+  -name name
+    	Project name (default "toolskel")
   -new-library
     	Same as -library -library-readme -staticcheck
   -new-program
