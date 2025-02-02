@@ -1,81 +1,66 @@
-Tool Skeleton Generator
-=======================
+toolskel
+========
 Generates boilerplate for small tools written in Go.
 
 Expected userbase size: `1`
 
 Example output can be found in
-[`internal/gencode/tests`](.internal/gencode/tests).
+[`t/testdata/files`](./t/testdata/files).
 
-Tool Types
+Quickstart
 ----------
-The currently-available tool types are
-
-Type       | Description
------------|------------
-`library`  | Just headers, for a library
-`parallel` | Parallel task executor
-`simple `  | A no-frills tool
+1. Have a working Go installation.
+2. Grab the code.
+   ```sh
+   go install github.com/magisterquis/toolskel@latest
+   ```
+3. Be in a directory where a new project will live.
+4. Create some files.
+   ```sh
+   toolskel -new-program thing A cool Thing
+   ```
+5. Code away!
+   ```sh
+   vim -p README.md thing.go
+   make test
+   ```
 
 Usage
 -----
 ```
-Usage: toolskel [options] [toolname [tool description...]]
+Usage: toolskel [options] [name [description...]]
 
-Generates boilerplate for a tool written in Go.
+Generates boilerplate Go projects.  Go source files will be named name.go.
 
 Options:
   -author name
-    	Author's name (default "Stuart McMurray")
-  -list-types
-    	List available tool types
-  -no-date
-    	Do not set the Created/Modified date
-  -summary-count
-    	Generated code's summary prints a completed task count
-  -tag-log
-    	Tag log output with argv[0]
-  -type type
-    	Tool type (see -list-types) (default "simple")
-  -verbose-flag
-    	Add a -verbose flag
+    	Author's name (default "J. Stuart McMurray")
+  -dir string
+    	Directory in which to create files (default ".")
+  -gitignore
+    	Generate a .gitignore
+  -library
+    	Generate a library skeleton in name.go
+  -library-readme
+    	Generate a README.md suitable for a library
+  -makefile
+    	Generate a Makefile
+  -new-library
+    	Same as -library -library-readme -staticcheck
+  -new-program
+    	Same as -program -gitignore -makefile -program-readme -staticcheck
+  -overwrite
+    	Overwrite existing files
+  -program
+    	Generate a main() program skeleton in name.go
+  -program-readme
+    	Generate a README.md suitable for a program
+  -quiet
+    	Only log errors
+  -staticcheck
+    	Generate a sensible staticcheck.conf
+  -today date
+    	Created date for generated files (default "20250202")
+  -txtar
+    	Write a txtar achive to stdout intead of files
 ```
-
-Quickstart
-----------
-```sh
-go install github.com/magisterquis/toolskel@latest
-toolskel -h
-toolskel -author 'Darth Vader' findrebels Finds rebel scum > tool.go
-vi ./tool.go
-```
-
-Building and Testing
---------------------
-In most cases, `go install` should be sufficient.  The [Makefile](./Makefile)
-is only intended for use during development and assumes that
-[`goimports`](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) and 
-[`Staticcheck`](https://staticcheck.io) are available.
-
-Adding Templates
-----------------
-Adding a new tool type takes the form of a template which overrides blocks in
-the base template.
-
-1.  Add a template to
-    [`internal/gencode/templates`](./internal/gencode/templates) which should
-    replace blocks in
-    [`internal/gencode/base.tmpl`](./internal/gencode/base.tmpl).  Make sure to
-    update the `description` block.
-2.  Add a testcase or three to `TestCases` in
-    [`internal/gencode/toolskel_test.go`](.internal/gencode/toolskel_test.go).
-3.  Generate a test copy of the output with something like
-    ```sh
-    go run . -author '' -no-date -type $NEWTYPE > internal/gencode/tests/newtype.go
-    ```
-    The name should be the same as `Testcases[yours].name`, with slashes
-    replaced with underscores.
-4.  Run the tests with
-    ```sh
-    make tests
-    ```
