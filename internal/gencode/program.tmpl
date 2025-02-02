@@ -1,0 +1,52 @@
+{{- /*
+     * program.tmpl
+     * Emit a Go program skeleton
+     * By J. Stuart McMurray
+     * Created 20250201
+     * Last Modified 20250201
+     */ -}}
+// Program {{ .Name }} - {{ .Description }}
+package main
+
+{{  block "gocomment" . -}} {{- /* Also used by library.tmpl */ -}}
+/*
+ * {{ .Name }}.go
+ * {{ .Description }}
+ * By {{ .Author }}
+ * Created {{ .Today }}
+ * Last Modified {{ .Today }}
+ */
+{{- end  }}
+
+import (
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+func main() { os.Exit(rmain()) }
+func rmain() int {
+	/* Command-line flags. */
+	var (
+	/* TODO: Add flags. */
+	)
+	flag.Usage = func() {
+		fmt.Fprintf(
+			os.Stderr,
+			`Usage: %s [options]
+
+{{ .Description }}
+
+Options:
+`,
+			filepath.Base(os.Args[0]),
+		)
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	/* TODO: Meat and Potatoes. */
+
+	return 0
+}

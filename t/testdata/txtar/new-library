@@ -1,0 +1,27 @@
+-- something.go --
+// Package something - A cool Something
+package something
+
+/*
+ * something.go
+ * A cool Something
+ * By test_author
+ * Created 25251225
+ * Last Modified 25251225
+ */
+
+import "log"
+
+func init() { log.Printf("TODO: Finish This") }
+-- staticcheck.conf --
+checks = ["all", "-ST1017"]
+-- README.md --
+something
+=========
+A cool Something
+
+Example
+-------
+```go
+TODO: Finish this
+```

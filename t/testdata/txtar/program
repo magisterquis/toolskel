@@ -1,0 +1,44 @@
+-- something.go --
+// Program something - A cool Something
+package main
+
+/*
+ * something.go
+ * A cool Something
+ * By test_author
+ * Created 25251225
+ * Last Modified 25251225
+ */
+
+import (
+	"flag"
+	"fmt"
+	"os"
+	"path/filepath"
+)
+
+func main() { os.Exit(rmain()) }
+func rmain() int {
+	/* Command-line flags. */
+	var (
+	/* TODO: Add flags. */
+	)
+	flag.Usage = func() {
+		fmt.Fprintf(
+			os.Stderr,
+			`Usage: %s [options]
+
+A cool Something
+
+Options:
+`,
+			filepath.Base(os.Args[0]),
+		)
+		flag.PrintDefaults()
+	}
+	flag.Parse()
+
+	/* TODO: Meat and Potatoes. */
+
+	return 0
+}

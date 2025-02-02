@@ -1,0 +1,15 @@
+{{- /*
+     * program.tmpl
+     * Emit a Go library skeleton
+     * By J. Stuart McMurray
+     * Created 20250201
+     * Last Modified 20250201
+     */ -}}
+// Package {{ .Name }} - {{ .Description }}
+package {{ .Name }}
+
+{{ template "gocomment" . }}
+
+import "log"
+
+func init() { log.Printf("TODO: Finish This") }

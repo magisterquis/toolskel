@@ -1,0 +1,13 @@
+something
+=========
+A cool Something
+
+Quickstart
+----------
+1. Write a quickstart...
+
+Usage
+-----
+```
+TODO: Usage
+```

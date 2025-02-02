@@ -4,222 +4,161 @@ package gencode
  * gencode_test.go
  * Tests for gencode.go
  * By J. Stuart McMurray
- * Created 20230415
- * Last Modified 20240419
+ * Created 20250131
+ * Last Modified 20250131
  */
 
 import (
 	"bytes"
 	"embed"
-	"fmt"
-	"os"
-	"os/exec"
-	"path/filepath"
+	"encoding/json"
+	"io/fs"
+	"path"
+	"reflect"
 	"strings"
 	"testing"
 )
 
-// testWants contains the contents of the tests/ directory
+// testdata contains data used for testing.
 //
-//go:embed _tests
-var testWants embed.FS
+//go:embed testdata
+var testdata embed.FS
 
-// testWantsDir is the directory in testWants with the files for TestCases.
-const testWantsDir = "_tests"
+// testdataTopDir is the directory under which all other test data lives.
+const testdataTopDir = "testdata"
 
-// TestCases are common test cases for various tests.  Each test should have
-// a corresponding file in tests/ named after .name, with /'s replaced by
-// _'s and a .go suffix.
-var TestCases = []struct {
-	name  string
-	tType string /* Template name, less template/ and .tmpl */
-	data  Data
-	want  []byte
-}{{
-	name: "simple.go",
-}, {
-	name: "simple/summarycount.go",
-	data: Data{
-		SummaryCount: true,
-	},
-}, {
-	name: "simple/taglog.go",
-	data: Data{
-		TagLog: true,
-	},
-}, {
-	name: "simple/verbose.go",
-	data: Data{
-		Verbose: true,
-	},
-}, {
-	name: "simple/summarycountverbose.go",
-	data: Data{
-		SummaryCount: true,
-		Verbose:      true,
-	},
-}, {
-	name:  "parallel.go",
-	tType: "parallel",
-}, {
-	name:  "parallel/summarycount.go",
-	tType: "parallel",
-	data: Data{
-		SummaryCount: true,
-	},
-}, {
-	name:  "parallel/verbose.go",
-	tType: "parallel",
-	data: Data{
-		Verbose: true,
-	},
-}, {
-	name: "library.go",
-	data: Data{
-		Name: "main", /* For testing. */
-	},
-	tType: "library",
-}, {
-	name:  "Makefile",
-	tType: "makefile",
-}}
+// Make sure all of our templates load.  Since this happens on library load,
+// we just need to make sure there's a test somewhere.
+func TestInit(t *testing.T) {}
 
-// init populates TestCases's data fields.
-func init() {
-	var err error
-	for i, c := range TestCases {
-		/* Gotta have a name. */
-		if "" == c.name {
-			panic(fmt.Sprintf("no name for test %d", i))
-		}
+// Make sure we have a method for each template file.
+func Test_HaveAllTmplFiles(t *testing.T) {
+	/* Work out how many template functions we should have. */
+	des, err := tmplFS.ReadDir(".")
+	if nil != err {
+		t.Fatalf("Error reading embedded template FS: %s", err)
+	}
+	want := len(des) + 1 /* For ToFile */
 
-		/* Get the file. */
-		fn := filepath.Join(
-			testWantsDir,
-			strings.Replace(c.name, "/", "_", -1),
+	/* Work out how many template functions we do have. */
+	if got := reflect.TypeOf(Params{}).NumMethod(); got != want {
+		t.Errorf(
+			"Incorrect number of Template execution methods:\n"+
+				" got: %d\n"+
+				"want: %d\n"+
+				"Re-run go generate?",
+			got,
+			want,
 		)
-		c.want, err = testWants.ReadFile(fn)
+	}
+}
+
+// getTestData gets the subFS of testdata corresponding to t.Name or calls
+// t.Fatalf on error.
+func getTestData(t *testing.T) fs.FS {
+	/* Get this test's data subdirectory. */
+	td, err := fs.Sub(testdata, path.Join(testdataTopDir, t.Name()))
+	if nil != err {
+		t.Fatalf(
+			"Error geting subFS for %s: %s",
+			t.Name(),
+			err,
+		)
+	}
+	/* Make sure we actually got something. */
+	if _, err := td.Open("."); nil != err {
+		t.Fatalf(
+			"SubFS %s unusable: %s",
+			t.Name(),
+			err,
+		)
+	}
+	return td
+}
+
+// Test file generation, both for correctness but also to make sure we have
+// the same templates and methods.
+func TestParams_Generation(t *testing.T) {
+	var (
+		haveFN = "have.json"
+	)
+
+	/* test tests that gen works as a generator using name as the name
+	of the test cases.  It should be the Param.* method name. */
+	testGen := func(t *testing.T, td fs.FS, name string, gen Generator) {
+		/* Get the output we expect. */
+		ns, err := fs.Glob(td, name+"_want.*")
 		if nil != err {
-			panic(fmt.Sprintf("reading test file %s: %s", fn, err))
+			t.Fatalf("Error finding want file: %s", err)
+		} else if 0 == len(ns) {
+			t.Fatalf("No want file for %s", name)
+		} else if 1 != len(ns) {
+			t.Fatalf(
+				"Multiple potential want files: %s",
+				strings.Join(ns, " "),
+			)
 		}
-		/* Save it back. */
-		TestCases[i] = c
-	}
-}
-
-func TestGenCode(t *testing.T) {
-	for _, c := range TestCases {
-		/* If there's no known good for this one, skip it. */
-		if 0 == len(c.want) {
-			continue
+		want, err := fs.ReadFile(td, ns[0])
+		if nil != err {
+			t.Fatalf("Error reading %s: %s", ns[0], err)
 		}
-		t.Run(c.name, func(t *testing.T) {
-			t.Parallel()
-			var buf bytes.Buffer
-			/* If we don't have a tool name, use the default
-			default, so as to not have to fiddle about with test
-			directories. */
-			if "" == c.data.Name {
-				c.data.Name = defaultProgramName
-			}
-			if err := Generate(&buf, c.tType, c.data); nil != err {
-				t.Errorf("error: %s", err)
-				return
-			}
-			errorIfDiff(t, buf.Bytes(), c.want, "", "")
-		})
+		/* See if we get the right output. */
+		if got, err := gen(); nil != err {
+			t.Fatalf("Generation error: %s", err)
+		} else if !bytes.Equal(got, want) {
+			t.Errorf(
+				"Incorrect generated file:\n"+
+					" gotq: %q\n"+
+					"wantq: %q\n"+
+					"got:\n%s\n"+
+					"want:\n%s\n",
+				got,
+				want,
+				got,
+				want,
+			)
+		}
 	}
-}
 
-// TestWantBuild tests that the test cases' known-goods actually build.
-func TestWantBuild(t *testing.T) {
-	des, err := testWants.ReadDir(testWantsDir)
+	/* testFromDir runs test in the subtest's subFS, which should be a
+	directory containing a Params marshalled to json in test.json and
+	file named X_want.EXT for each method X on params with an arbitrary
+	EXT. */
+	testFromDir := func(t *testing.T) {
+		td := getTestData(t)
+		/* Test params. */
+		var p Params
+		if b, err := fs.ReadFile(td, haveFN); nil != err {
+			t.Fatalf("Error reading %s: %s", haveFN, err)
+		} else if err := json.Unmarshal(b, &p); nil != err {
+			t.Fatalf("Error unmarshalling Params: %s", err)
+		}
+		/* Try ALL the methods. */
+		var (
+			pv = reflect.ValueOf(p)
+			pt = pv.Type()
+		)
+		for i := range pt.NumMethod() {
+			name := pt.Method(i).Name
+			/* If this isn't a generator, don't need to worry about
+			it. */
+			gen, ok := pv.Method(i).Interface().(Generator)
+			if !ok {
+				continue
+			}
+			t.Run(name, func(t *testing.T) {
+				testGen(t, td, name, gen)
+			})
+		}
+	}
+
+	/* Test the test in each directory. */
+	td := getTestData(t)
+	des, err := fs.ReadDir(td, ".")
 	if nil != err {
-		t.Fatalf("Error reading embedded FS: %s", err)
+		t.Fatalf("Error getting test directories: %s", err)
 	}
-
 	for _, de := range des {
-		de := de /* D: */
-		t.Run(de.Name(), func(t *testing.T) {
-			t.Parallel()
-			if de.IsDir() {
-				t.Errorf("Got a directory, expected a file")
-				return
-			}
-			efn := filepath.Join(testWantsDir, de.Name())
-			b, err := testWants.ReadFile(efn)
-			if nil != err {
-				t.Errorf("Error reading file %s: %s", efn, err)
-				return
-			}
-			td := t.TempDir()
-			fn := filepath.Join(td, de.Name())
-			if err := os.WriteFile(fn, b, 0660); nil != err {
-				t.Errorf("Error writing to %s: %s", fn, err)
-				return
-			}
-
-			/* If we've got a Go file, try to build it. */
-			if strings.HasSuffix(de.Name(), ".go") {
-				if _, err := combinedOutput(
-					t,
-					td,
-					"go mod init tstest",
-				); nil != err {
-					t.Errorf(
-						"Error adding go.mod: %s",
-						err,
-					)
-					return
-				}
-				if _, err := combinedOutput(
-					t,
-					td,
-					"go run . -h",
-				); nil != err {
-					t.Errorf(
-						"Build failed with error: %s",
-						err,
-					)
-					return
-				}
-			}
-		})
+		t.Run(de.Name(), testFromDir)
 	}
-}
-
-// combinedOutputError is returned by combinedOutput when the underlying
-// exec.Cmd.CombinedOutput returns an error.
-type combinedOutputError struct {
-	Output []byte
-	Err    error
-}
-
-// Unwrap returns the underlying error but no output.
-func (err combinedOutputError) Unwrap() error { return err.Err }
-
-// Error implements the error interface.
-func (err combinedOutputError) Error() string {
-	if 0 == len(err.Output) {
-		return err.Error()
-	}
-	return fmt.Sprintf("%s\nOutput:\n%s", err.Err, err.Output)
-}
-
-// combinedOutput returns the output of running the command in a shell in the
-// given directory, plus any errors encountered.  If exec.Cmd.CombinedOutput
-// returns an error, combinedOutput returns a combinedOutputError.
-func combinedOutput(t *testing.T, dir, cmd string) ([]byte, error) {
-	t.Helper()
-	if 0 == len(cmd) {
-		return nil, fmt.Errorf("empty command")
-	}
-	/* Yeah, Windows.  PRs welcome. */
-	c := exec.Command("/bin/sh", "-c", cmd)
-	c.Dir = dir
-	o, err := c.CombinedOutput()
-	if nil != err {
-		return nil, combinedOutputError{Output: o, Err: err}
-	}
-	return o, nil
 }

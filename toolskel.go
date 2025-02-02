@@ -6,99 +6,255 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20230427
+ * Last Modified 20250201
  */
 
 import (
+	"cmp"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/magisterquis/toolskel/internal/gencode"
+	"golang.org/x/tools/txtar"
+)
+
+// Default filenames
+var (
+	GitignoreName   = ".gitignore"
+	MakefileName    = "Makefile"
+	ReadmeName      = "README.md"
+	StaticcheckName = "staticcheck.conf"
 )
 
 func main() {
 	var (
-		noDate = flag.Bool(
-			"no-date",
+		createProgram = flag.Bool(
+			"program",
 			false,
-			"Do not set the Created/Modified date",
+			"Generate a main() program skeleton in name.go",
 		)
-		listTypes = flag.Bool(
-			"list-types",
+		createLibrary = flag.Bool(
+			"library",
 			false,
-			"List available tool types",
+			"Generate a library skeleton in name.go",
 		)
-		tType = flag.String(
-			"type",
-			gencode.DefaultTType,
-			"Tool `type` (see -list-types)",
+		createMakefile = flag.Bool(
+			"makefile",
+			false,
+			"Generate a Makefile",
+		)
+		createStaticcheck = flag.Bool(
+			"staticcheck",
+			false,
+			"Generate a sensible staticcheck.conf",
+		)
+		createProgramReadme = flag.Bool(
+			"program-readme",
+			false,
+			"Generate a README.md suitable for a program",
+		)
+		createLibraryReadme = flag.Bool(
+			"library-readme",
+			false,
+			"Generate a README.md suitable for a library",
+		)
+		createGitignore = flag.Bool(
+			"gitignore",
+			false,
+			"Generate a .gitignore",
+		)
+		/* Bulk creation. */
+		newProgram = flag.Bool(
+			"new-program",
+			false,
+			"Same as -program -gitignore -makefile "+
+				"-program-readme -staticcheck",
+		)
+		newLibrary = flag.Bool(
+			"new-library",
+			false,
+			"Same as -library -library-readme -staticcheck",
+		)
+		/* Other options. */
+		dir = flag.String(
+			"dir",
+			".",
+			"Directory in which to create files",
+		)
+		overwrite = flag.Bool(
+			"overwrite",
+			false,
+			"Overwrite existing files",
 		)
 		author = flag.String(
 			"author",
 			defaultUsername(),
 			"Author's `name`",
 		)
-		summaryCount = flag.Bool(
-			"summary-count",
+		toTxtar = flag.Bool(
+			"txtar",
 			false,
-			"Generated code's summary prints a "+
-				"completed task count ",
+			"Write a txtar achive to stdout intead of files",
 		)
-		tagLog = flag.Bool(
-			"tag-log",
-			false,
-			"Tag log output with argv[0]",
+		today = flag.String(
+			"today",
+			time.Now().Format("20060102"),
+			"Created `date` for generated files",
 		)
-		addVerbose = flag.Bool(
-			"verbose-flag",
+		quiet = flag.Bool(
+			"quiet",
 			false,
-			"Add a -verbose flag",
+			"Only log errors",
 		)
 	)
 	flag.Usage = func() {
 		fmt.Fprintf(
 			os.Stderr,
-			`Usage: %s [options] [toolname [tool description...]]
+			`Usage: %s [options] [name [description...]]
 
-Generates boilerplate for a tool written in Go.
+Generates boilerplate Go projects.  Go source files will be named name.go.
 
 Options:
 `,
-			os.Args[0],
+			filepath.Base(os.Args[0]),
 		)
 		flag.PrintDefaults()
 	}
 	flag.Parse()
 
-	/* If we're just listing template types, life's easy. */
-	if *listTypes {
-		gencode.ListTypes()
-		return
+	/* Be in the file-creation directory. */
+	if !*toTxtar {
+		if err := os.Chdir(*dir); nil != err {
+			log.Fatalf(
+				"Error setting working directory to %s: %s",
+				*dir,
+				err,
+			)
+		}
 	}
 
-	/* Fill in the rest of the data for the template. */
-	data := gencode.Data{
-		Name:         flag.Arg(0),
-		Author:       *author,
-		TagLog:       *tagLog,
-		SummaryCount: *summaryCount,
-		Verbose:      *addVerbose,
+	/* Set bulk options. */
+	if *newProgram {
+		*createGitignore = true
+		*createMakefile = true
+		*createProgram = true
+		*createProgramReadme = true
+		*createStaticcheck = true
 	}
-	if "" != flag.Arg(1) {
-		data.Description = strings.Join(flag.Args()[1:], " ")
-	}
-	if !*noDate {
-		data.Today = time.Now().Format("20060102")
+	if *newLibrary {
+		*createLibrary = true
+		*createLibraryReadme = true
+		*createStaticcheck = true
 	}
 
-	/* Generate the code itself. */
-	if err := gencode.Generate(os.Stdout, *tType, data); nil != err {
-		log.Fatalf("Error generating code: %s", err)
+	/* Can create a program xor a library. */
+	if *createProgram && *createLibrary {
+		log.Fatalf("Cannot create both a program and a library")
+	} else if *createProgramReadme && *createLibraryReadme {
+		log.Fatalf("Cannot create both a program and a library README")
+	}
+
+	/* Generation parameters. */
+	params := gencode.Params{
+		Name:   flag.Arg(0),
+		Author: *author,
+		Today:  *today,
+	}
+	if 2 <= flag.NArg() {
+		params.Description = strings.Join(flag.Args()[1:], " ")
+	}
+
+	/* Prep a txtar archive, if we're doing that. */
+	var ta txtar.Archive
+	if *toTxtar {
+		ta.Comment = []byte(fmt.Sprintf(
+			"Created by toolskel %s",
+			time.Now().Format(time.RFC3339),
+		))
+	}
+
+	/* Generate ALL the things. */
+	tool := cmp.Or(params.Name, gencode.DefaultName)
+	for _, f := range []struct {
+		do   bool
+		name string
+		gen  gencode.Generator
+	}{{
+		do:   *createProgram,
+		name: tool + ".go",
+		gen:  params.Program,
+	}, {
+		do:   *createLibrary,
+		name: tool + ".go",
+		gen:  params.Library,
+	}, {
+		do:   *createMakefile,
+		name: MakefileName,
+		gen:  params.Makefile,
+	}, {
+		do:   *createStaticcheck,
+		name: StaticcheckName,
+		gen:  params.Staticcheck,
+	}, {
+		do:   *createProgramReadme,
+		name: ReadmeName,
+		gen:  params.Programreadme,
+	}, {
+		do:   *createLibraryReadme,
+		name: ReadmeName,
+		gen:  params.Libraryreadme,
+	}, {
+		do:   *createGitignore,
+		name: GitignoreName,
+		gen:  params.Gitignore,
+	}} {
+		/* Easy if we're not generating this one. */
+		if !f.do {
+			continue
+		}
+		/* Writing to a file is easy. */
+		if !*toTxtar {
+			if err := params.ToFile(
+				f.name,
+				f.gen,
+				*overwrite,
+			); nil != err {
+				log.Fatalf(
+					"Error creating %s: %s",
+					f.name,
+					err,
+				)
+			}
+			if !*quiet {
+				log.Printf("Created %s", f.name)
+			}
+			continue
+		}
+		/* Update the archive. */
+		var (
+			tf  = txtar.File{Name: f.name}
+			err error
+		)
+		if tf.Data, err = f.gen(); nil != err {
+			log.Fatalf("Error generating %s: %s", f.name, err)
+		}
+		ta.Files = append(ta.Files, tf)
+		if !*quiet {
+			log.Printf("Generated %s", f.name)
+		}
+	}
+
+	/* Write the archive, if we're archiving. */
+	if *toTxtar {
+		if _, err := os.Stdout.Write(txtar.Format(&ta)); nil != err {
+			log.Fatalf("Error writing archive: %s", err)
+		}
 	}
 }
 

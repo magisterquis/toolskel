@@ -1,8 +1,8 @@
 # Makefile
-# Build toolskel
-# By J. Stuart McMurray
-# Created 20250202
-# Last Modified 20250202
+# Build {{ .Name }}
+# By {{ .Author }}
+# Created {{ .Today }}
+# Last Modified {{ .Today }}
 
 BINNAME       != basename $$(pwd)
 GOBUILDFLAGS   = -trimpath -ldflags "-w -s"
