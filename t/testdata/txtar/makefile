@@ -46,5 +46,5 @@ clean: ## Remove built things
 	rm -rf ${BINNAME}
 
 help: .NOTMAIN ## This help
-	@perl -ne '/^(\S+):.*?##\s*(.*)/&&print"$$1\t-\t$$2\n"' \
+	@perl -ne '/^(\S+?):+.*?##\s*(.*)/&&print"$$1\t-\t$$2\n"' \
 		${MAKEFILE_LIST} | column -ts "$$(printf "\t")"
