@@ -39,7 +39,7 @@ provetest: ## Run tests with prove(1) if ./t exists
 .endif
 
 install: ## Install to GOBIN ($GOPATH/bin or $HOME/go/bin)
-	go install ${BUILDFLAGS}
+	go install ${GOBUILDFLAGS}
 
 clean: ## Remove built things
 	rm -rf ${BINNAME}
