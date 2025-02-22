@@ -4,7 +4,7 @@
 # Test file generation
 # By J. Stuart McMurray
 # Created 20250201
-# Last Modified 20250201
+# Last Modified 20250222
 
 set -e
 
@@ -14,7 +14,7 @@ tap_plan 9
 
 # test_gen tests generating using the flag -$1 and checks agains the contents
 # of the directory $2.
-test_gen() {(
+test_gen() {
         tap_plan 3
         # Temporary directory for files
         TD=$(mktemp -d)
@@ -35,12 +35,12 @@ test_gen() {(
         GOT=$(diff -u "$TD" "$DIR")
         tap_ok $? "No differences found" "$0" $LINENO
         tap_diag "$GOT"
-)}
+}
 
 # Test ALL the things
 for DIR in t/testdata/files/*; do
         FLAG=${DIR##*/}
-        subtest() {( test_gen "$FLAG" "$DIR"; )}
+        subtest() { test_gen "$FLAG" "$DIR"; }
         tap_subtest "Generate -$FLAG" "subtest" "$0" $LINENO
 done
 
