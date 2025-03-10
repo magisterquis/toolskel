@@ -1,11 +1,12 @@
-#!/bin/sh
+#!/bin/ksh
 #
 # files.t
 # Make sure our Makefile is the same as what's generated
 # By J. Stuart McMurray
 # Created 20250222
-# Last Modified 20250222
+# Last Modified 20250310
 
+set -euo pipefail
 
 . ./t/shmore.subr
 
@@ -24,6 +25,9 @@ tap_ok "$?" "Makefile generated" "$0" $LINENO
 CURRENT="$TMPD/Current"
 cp Makefile "$CURRENT"
 
+# At this point, commands failing won't bork future tests.
+set +e
+
 # For both, set the Created/Last Modified dates to known values
 for F in $NEW $CURRENT; do
         sed -Ei 's/^# (Created|Last Modified) [[:digit:]]{8}/# \1 12345678/' $F
@@ -36,7 +40,7 @@ for F in $NEW $CURRENT; do
 done
 
 # Make sure it's close enough to ours.
-GOT=$(diff "$CURRENT" "$NEW")
+GOT="$(diff "$CURRENT" "$NEW")"
 tap_is "$GOT" "" "Current and generated Makefiles the same" "$0" $LINENO
 
 # vim: ft=sh

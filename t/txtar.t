@@ -4,9 +4,9 @@
 # Test txtar generation
 # By J. Stuart McMurray
 # Created 20250201
-# Last Modified 20250222
+# Last Modified 20250310
 
-set -e
+set -euo pipefail
 
 . ./t/shmore.subr
 
