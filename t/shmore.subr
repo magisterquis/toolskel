@@ -2,7 +2,7 @@
 # Shell knockoff of Test::More
 # By J. Stuart McMurray
 # Created 20241109
-# Last Modified 20250308
+# Last Modified 20250310
 
 # Shmore's source repository is
 # https://github.com/magisterquis/shmore
@@ -282,6 +282,7 @@ TAP_RETURN_BAILED_OUT=255
 # This all works until we run multi-threaded.
 _tap_bailo=
 _tap_doner=
+_tap_final=
 _tap_nfail=0
 _tap_nplan=0
 _tap_ntest=0
@@ -301,6 +302,7 @@ tap_reset() {
         _TAP_OK_SEPARATOR=
         _tap_bailo=
         _tap_doner=
+        _tap_final=
         _tap_nfail=0
         _tap_nplan=0
         _tap_ntest=0
@@ -380,6 +382,11 @@ fi
 # we would.  It returns nonzero if we failed a test or got the wrong number
 # of tests.
 _tap_finalize() {
+        # Idempotency
+        if [ -n "${_tap_final}" ]; then
+                return "${_tap_final}"
+        fi
+
         # If we didn't make a plan, assume we ran as many tests as we
         # should have.
         if [ -z "${_tap_skipa}" ] &&
@@ -408,12 +415,13 @@ of ${_tap_ntest}${_tap_qualifier}." >&2
         fi
 
         # Return indicates if all tests passed.
+        _tap_final=0
         if [ 0 -ne ${_tap_nfail} ]; then
-                return ${_tap_nfail}
+                _tap_final=${_tap_nfail}
         elif [ ${_tap_nplan} -ne ${_tap_ntest} ]; then
-                return 1
+                _tap_final=1
         fi
-        return 0
+        return ${_tap_final}
 }
 
 # tap_plan prints the number of tests we expect.  Specifying 0 subtests lets a
