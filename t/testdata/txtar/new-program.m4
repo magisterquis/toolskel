@@ -53,8 +53,9 @@ Options:
 BINNAME       != basename $$(pwd)
 GOBUILDFLAGS   = -trimpath -ldflags "-w -s"
 GOTESTFLAGS   += -timeout 3s
+SHMOREURL      = https://raw.githubusercontent.com/magisterquis/shmore/refs/heads/master/shmore.subr
 
-.PHONY: all build test gotest provetest help install clean
+.PHONY: all build test gotest provetest help install update clean
 
 all: test build ## Build ALL the things (default)
 
@@ -83,6 +84,12 @@ provetest: ## Run tests with prove(1) if ./t exists
 .if exists(./t/)
 	prove -It --directives
 .endif
+
+update: ## Fetch the latest Shmore and up-to-date Go things
+	curl --fail --show-error --silent --output t/shmore.subr ${SHMOREURL}
+	go get go
+	go get -u
+	go mod tidy
 
 install: ## Install to GOBIN ($GOPATH/bin or $HOME/go/bin)
 	go install ${GOBUILDFLAGS}
