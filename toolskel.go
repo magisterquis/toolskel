@@ -6,11 +6,12 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20250201
+ * Last Modified 20250310
  */
 
 import (
 	"cmp"
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -27,9 +28,11 @@ import (
 
 // Default filenames
 var (
+	BasicTestsName  = "t/basic_tests.t"
 	GitignoreName   = ".gitignore"
 	MakefileName    = "Makefile"
 	ReadmeName      = "README.md"
+	ShmoreName      = "t/shmore.subr"
 	StaticcheckName = "staticcheck.conf"
 )
 
@@ -70,12 +73,28 @@ func main() {
 			false,
 			"Generate a .gitignore",
 		)
+		createShmore = flag.Bool(
+			"shmore",
+			false,
+			fmt.Sprintf(
+				"Generate a ./%s directory with shmore",
+				filepath.Dir(ShmoreName),
+			),
+		)
+		createBasicTests = flag.Bool(
+			"basic-tests",
+			false,
+			fmt.Sprintf(
+				"Generate a ./%s directory with basic tests",
+				filepath.Dir(BasicTestsName),
+			),
+		)
 		/* Bulk creation. */
 		newProgram = flag.Bool(
 			"new-program",
 			false,
-			"Same as -program -gitignore -makefile "+
-				"-program-readme -staticcheck",
+			"Same as -basic-tests -program -gitignore -makefile "+
+				"-program-readme -shmore -staticcheck",
 		)
 		newLibrary = flag.Bool(
 			"new-library",
@@ -147,10 +166,12 @@ Options:
 
 	/* Set bulk options. */
 	if *newProgram {
+		*createBasicTests = true
 		*createGitignore = true
 		*createMakefile = true
 		*createProgram = true
 		*createProgramReadme = true
+		*createShmore = true
 		*createStaticcheck = true
 	}
 	if *newLibrary {
@@ -219,6 +240,16 @@ Options:
 			do:   *createGitignore,
 			name: GitignoreName,
 			gen:  params.Gitignore,
+		}, {
+			do:   *createBasicTests,
+			name: BasicTestsName,
+			gen:  params.Basic_tests,
+		}, {
+			do:   *createShmore,
+			name: ShmoreName,
+			gen: func() ([]byte, error) {
+				return params.Shmore(context.Background())
+			},
 		}}
 	)
 	/* Make sure we actually have something to do. */

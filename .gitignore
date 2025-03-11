@@ -1,3 +1,7 @@
 .*.swp
 toolskel
 toolskel-*-*
+/t/testdata/txtar/new-program
+/t/testdata/txtar/shmore
+/t/testdata/files/new-program/t/shmore.subr
+/t/testdata/files/shmore/t/shmore.subr

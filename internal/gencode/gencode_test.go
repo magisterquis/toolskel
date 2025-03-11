@@ -5,7 +5,7 @@ package gencode
  * Tests for gencode.go
  * By J. Stuart McMurray
  * Created 20250131
- * Last Modified 20250131
+ * Last Modified 20250310
  */
 
 import (
@@ -38,7 +38,7 @@ func Test_HaveAllTmplFiles(t *testing.T) {
 	if nil != err {
 		t.Fatalf("Error reading embedded template FS: %s", err)
 	}
-	want := len(des) + 1 /* For ToFile */
+	want := len(des) + 2 /* For ToFile and Shmore. */
 
 	/* Work out how many template functions we do have. */
 	if got := reflect.TypeOf(Params{}).NumMethod(); got != want {
@@ -87,11 +87,12 @@ func TestParams_Generation(t *testing.T) {
 	of the test cases.  It should be the Param.* method name. */
 	testGen := func(t *testing.T, td fs.FS, name string, gen Generator) {
 		/* Get the output we expect. */
-		ns, err := fs.Glob(td, name+"_want.*")
+		wantFN := name + "_want.*"
+		ns, err := fs.Glob(td, wantFN)
 		if nil != err {
 			t.Fatalf("Error finding want file: %s", err)
 		} else if 0 == len(ns) {
-			t.Fatalf("No want file for %s", name)
+			t.Fatalf("No want file %s for %s", wantFN, name)
 		} else if 1 != len(ns) {
 			t.Fatalf(
 				"Multiple potential want files: %s",

@@ -4,18 +4,25 @@
 # Test file generation
 # By J. Stuart McMurray
 # Created 20250201
-# Last Modified 20250310
+# Last Modified 20250311
 
 set -euo pipefail
 
 . ./t/shmore.subr
 
-tap_plan 9
+tap_plan 12
+
+TESTDATA=t/testdata/files
+
+# Update all the files with macros
+make -C "$TESTDATA" -f ../../updatemacros.mk -s
+tap_ok $? "Macro files up-to-date" "$0" $LINENO
 
 # test_gen tests generating using the flag -$1 and checks agains the contents
 # of the directory $2.
 test_gen() {
         tap_plan 3
+
         # Temporary directory for files
         TD=$(mktemp -d)
         tap_ok "$?" "Made temporary directory" "$0" $LINENO
@@ -32,9 +39,8 @@ test_gen() {
         tap_ok $? "Ran successfully" "$0" $LINENO
 
         # See where they differ
-        GOT=$(diff -u "$TD" "$DIR")
-        tap_ok $? "No differences found" "$0" $LINENO
-        tap_diag "$GOT"
+        GOT=$(diff -ruN -x '*.m4' "$TD" "$DIR" ||:)
+        tap_is "$GOT" "" "No differences found" "$0" $LINENO
 }
 
 # Test ALL the things

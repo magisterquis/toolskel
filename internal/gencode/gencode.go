@@ -6,7 +6,7 @@ package gencode
  * Generate code from templates.
  * By J. Stuart McMurray
  * Created 20250130
- * Last Modified 20250201
+ * Last Modified 20250310
  */
 
 import (
@@ -28,7 +28,11 @@ var (
 	//go:embed *.tmpl
 	tmplFS embed.FS
 
-	tmpl = template.Must(template.New("").Funcs(newFuncMap()).ParseFS(tmplFS, `*.tmpl`))
+	tmpl = template.Must(
+		template.New("").
+			Funcs(newFuncMap()).
+			ParseFS(tmplFS, `*.tmpl`),
+	)
 )
 
 // Defaults for like-named fields in Params.
@@ -54,7 +58,7 @@ type Params struct {
 // ToFile wraps a Generate* function and writes its output to the file named
 // fn.  Output is first written to a temporary file which is then atomically
 // renamed.  If fn already exists, it will only be overwritten if overwrite is
-// true.
+// true.  Directories will be created as needed.
 func (p Params) ToFile(fn string, generator Generator, overwrite bool) error {
 	/* Don't accidentally overwrite fn. */
 	fi, err := os.Stat(fn)
@@ -74,8 +78,14 @@ func (p Params) ToFile(fn string, generator Generator, overwrite bool) error {
 		return fmt.Errorf("generating file: %w", err)
 	}
 
+	/* Make sure we have any directories we need. */
+	dn := filepath.Dir(fn)
+	if err := os.MkdirAll(dn, 0700); nil != err {
+		return fmt.Errorf("creating directory %s: %w", dn, err)
+	}
+
 	/* Temporary file we'll move over fn, for atomicity. */
-	f, err := os.CreateTemp(filepath.Dir(fn), filepath.Base(fn))
+	f, err := os.CreateTemp(dn, filepath.Base(fn))
 	if nil != err {
 		return fmt.Errorf("creating temporary file: %w", err)
 	}

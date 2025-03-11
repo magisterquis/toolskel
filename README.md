@@ -35,6 +35,8 @@ Generates boilerplate Go projects.  Go source files will be named name.go.
 Options:
   -author name
     	Author's name (default "J. Stuart McMurray")
+  -basic-tests
+    	Generate a ./t directory with basic tests
   -dir string
     	Directory in which to create files (default ".")
   -gitignore
@@ -50,7 +52,7 @@ Options:
   -new-library
     	Same as -library -library-readme -staticcheck
   -new-program
-    	Same as -program -gitignore -makefile -program-readme -staticcheck
+    	Same as -basic-tests -program -gitignore -makefile -program-readme -shmore -staticcheck
   -overwrite
     	Overwrite existing files
   -program
@@ -59,10 +61,12 @@ Options:
     	Generate a README.md suitable for a program
   -quiet
     	Only log errors
+  -shmore
+    	Generate a ./t directory with shmore
   -staticcheck
     	Generate a sensible staticcheck.conf
   -today date
-    	Created date for generated files (default "20250202")
+    	Created date for generated files (default "20250310")
   -txtar
     	Write a txtar achive to stdout intead of files
 ```

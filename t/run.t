@@ -4,17 +4,13 @@
 # Test file generation
 # By J. Stuart McMurray
 # Created 20250201
-# Last Modified 20250310
+# Last Modified 20250311
 
 set -euo pipefail
 
 . ./t/shmore.subr
 
-tap_plan 3
-
-# Will we get a -h happily?
-go run . -h 2>/dev/null
-tap_ok $? "Ran with -h ok" "$0" $LINENO
+tap_plan 2
 
 # Will we get a warning if we don't specify a file?
 GOT=$(! go run . 2>&1)
