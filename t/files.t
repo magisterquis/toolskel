@@ -39,7 +39,7 @@ test_gen() {
         tap_ok $? "Ran successfully" "$0" $LINENO
 
         # See where they differ
-        GOT=$(diff -ruN -x '*.m4' "$TD" "$DIR" ||:)
+        GOT=$(diff -ruN -x '*.m4' -x '*.swp' "$TD" "$DIR" ||:)
         tap_is "$GOT" "" "No differences found" "$0" $LINENO
 }
 
