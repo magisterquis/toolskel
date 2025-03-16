@@ -1,0 +1,21 @@
+{{- /*
+     * gotest.tmpl
+     * Emit a Go test skeleton
+     * By J. Stuart McMurray
+     * Created 20250316
+     * Last Modified 20250316
+     */ -}}
+package {{ .Name }}
+
+/*
+ * {{ .Name }}_test.go
+ * Tests for {{ .Name }}.go
+ * By {{ .Author }}
+ * Created {{ .Today }}
+ * Last Modified {{ .Today }}
+ */
+
+import "testing"
+
+func Test_{{.Name}}(t *testing.T) { t.Skipf("TODO: Finish This") }
+{{/* vim: set filetype=gotexttmpl noexpandtab smartindent: */ -}}

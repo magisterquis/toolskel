@@ -6,7 +6,7 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20250310
+ * Last Modified 20250316
  */
 
 import (
@@ -89,6 +89,11 @@ func main() {
 				filepath.Dir(BasicTestsName),
 			),
 		)
+		createGoTest = flag.Bool(
+			"go-test",
+			false,
+			"Generate a Go test skeleton in name_test.go",
+		)
 		/* Bulk creation. */
 		newProgram = flag.Bool(
 			"new-program",
@@ -99,7 +104,8 @@ func main() {
 		newLibrary = flag.Bool(
 			"new-library",
 			false,
-			"Same as -library -library-readme -staticcheck",
+			"Same as -library -library-readme -go-test "+
+				"-staticcheck",
 		)
 		/* Other options. */
 		name = flag.String(
@@ -175,6 +181,7 @@ Options:
 		*createStaticcheck = true
 	}
 	if *newLibrary {
+		*createGoTest = true
 		*createLibrary = true
 		*createLibraryReadme = true
 		*createStaticcheck = true
@@ -244,6 +251,10 @@ Options:
 			do:   *createBasicTests,
 			name: BasicTestsName,
 			gen:  params.Basic_tests,
+		}, {
+			do:   *createGoTest,
+			name: tool + "_test.go",
+			gen:  params.Gotest,
 		}, {
 			do:   *createShmore,
 			name: ShmoreName,
