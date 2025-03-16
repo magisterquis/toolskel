@@ -6,7 +6,7 @@ package main
  * Generate code generators for gencode.
  * By J. Stuart McMurray
  * Created 20250130
- * Last Modified 20250201
+ * Last Modified 20250316
  */
 
 import (
@@ -17,6 +17,7 @@ import (
 	"go/ast"
 	"go/format"
 	"go/token"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -81,12 +82,35 @@ Options:
 		log.Fatalf("gengencode: Error generating code: %s", err)
 	}
 
-	/* Work out output. */
+	/* If we're just printing the generated code, life's easy. */
 	if "" == *outputFile {
 		os.Stdout.Write(b)
 		return
-	} else if err := os.WriteFile(*outputFile, b, 0644); nil != err {
-		log.Fatalf("gencode: Error writing to %s: %s", *outputFile, err)
+	}
+
+	/* Work out what we've already got.  If there's no change, no need to
+	do anything. */
+	old, err := os.ReadFile(*outputFile)
+	if nil != err && !errors.Is(err, fs.ErrNotExist) {
+		log.Fatalf(
+			"gengencode: Error reading %s: %s",
+			*outputFile,
+			err,
+		)
+	}
+	_, oldBody, _ := strings.Cut(string(old), "\n")
+	_, newBody, _ := strings.Cut(string(b), "\n")
+	if oldBody == newBody {
+		return
+	}
+
+	/* Got new data.  Update the file. */
+	if err := os.WriteFile(*outputFile, b, 0644); nil != err {
+		log.Fatalf(
+			"gengencode: Error writing to %s: %s",
+			*outputFile,
+			err,
+		)
 	}
 }
 
