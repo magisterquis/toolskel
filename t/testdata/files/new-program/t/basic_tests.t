@@ -6,7 +6,7 @@
 # Created 25251225
 # Last Modified 25251225
 
-set -eu
+set -u
 if (set -o pipefail 2>/dev/null); then set -o pipefail; fi
 
 . t/shmore.subr
@@ -14,22 +14,19 @@ if (set -o pipefail 2>/dev/null); then set -o pipefail; fi
 tap_plan 3
 
 # Make sure we're not using MQD.
-GOT="$(go run . -h </dev/null 2>&1 | egrep 'MQD DEBUG PACKAGE LOADED$' ||:)"
+GOT="$(go run . -h </dev/null 2>&1 | egrep 'MQD DEBUG PACKAGE LOADED$')"
 tap_is "$GOT" "" "Not using github.com/magisterquis/mqd" "$0" $LINENO
 
 # Make sure we didn't leave any stray DEBUGs lying about.
-GOT="$(egrep -InR '#[[:space:]]*DEBUG' | sort -u ||:)"
+GOT="$(egrep -InR '#[[:space:]]*DEBUG' | sort -u)"
 tap_is \
         "$GOT" \
         "" \
         "No files with DEBUG comments" \
         "$0" $LINENO
 
-# Should get happy help output.  Not exiting cleanly is ok, and part of
-# testing.
-set +e
+# Should get happy help output.
 go run . -h 2>/dev/null
 tap_ok $? "Ran with -h ok" "$0" $LINENO
-set -e
 
 # vim: ft=sh
