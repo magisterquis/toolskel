@@ -1,3 +1,10 @@
+{{- /*
+     * makefile.tmpl
+     * Emit a usable makefile
+     * By J. Stuart McMurray
+     * Created 20250201
+     * Last Modified 20250326
+     */ -}}
 # Makefile
 # Build {{ .Name }}
 # By {{ .Author }}
@@ -31,7 +38,7 @@ gotest: ## Run go-specific tests
 		/^Usage: /\
 			{ sub(/^Usage: [^[:space:]]+\//, "Usage: ") }\
 		/.{80,}/\
-			{ print "Long usage line: " $0; exit 1 }\
+			{ print "Long usage line: " $$0; exit 1 }\
 	'
 
 provetest: ## Run tests with prove(1) if ./t exists
@@ -54,3 +61,4 @@ clean: ## Remove built things
 help: .NOTMAIN ## This help
 	@perl -ne '/^(\S+?):+.*?##\s*(.*)/&&print"$$1\t-\t$$2\n"' \
 		${MAKEFILE_LIST} | column -ts "$$(printf "\t")"
+{{/* vim: set filetype=gotexttmpl noexpandtab smartindent: */ -}}

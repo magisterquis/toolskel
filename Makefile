@@ -2,7 +2,7 @@
 # Build toolskel
 # By J. Stuart McMurray
 # Created 20250202
-# Last Modified 20250311
+# Last Modified 20250326
 
 BINNAME       != basename $$(pwd)
 GOBUILDFLAGS   = -trimpath -ldflags "-w -s"
@@ -31,7 +31,7 @@ gotest: ## Run go-specific tests
 		/^Usage: /\
 			{ sub(/^Usage: [^[:space:]]+\//, "Usage: ") }\
 		/.{80,}/\
-			{ print "Long usage line: " $0; exit 1 }\
+			{ print "Long usage line: " $$0; exit 1 }\
 	'
 
 provetest: ## Run tests with prove(1) if ./t exists
