@@ -17,15 +17,14 @@ set -uo pipefail
 
 . t/shmore.subr
 
-tap_plan 5
+NTEST=6
+tap_plan "$NTEST"
 
-# Make sure we didn't leave any stray DEBUGs lying about.
-GOT="$(egrep -InR '#[[:space:]]*DEBUG' | sort -u)"
-tap_is \
-        "$GOT" \
-        "" \
-        "No files with DEBUG comments" \
-        "$0" $LINENO
+# Make sure we didn't leave any stray DEBUGs or TAP_TODOs lying about.
+GOT=$(egrep -InR '#[[:space:]]*DEBUG' | sort -u)
+tap_is "$GOT" "" "No files with DEBUG comments" "$0" $LINENO
+GOT=$(egrep -InR 'TAP_TODO[=]' t/*.t | sort -u)
+tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 
 # These checks assume we're writing a Go program.
 if [[ -f ./go.mod ]]; then
@@ -63,7 +62,7 @@ if [[ -f ./go.mod ]]; then
                 -m go)"
         tap_is "$GOT" "" "Latest Go version will be used" "$0" $LINENO
 else
-        tap_skip "Not a Go program" 4
+        tap_skip "Not a Go program" $((NTEST-2))
 fi
 
 # vim: ft=sh
