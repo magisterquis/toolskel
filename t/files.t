@@ -4,9 +4,9 @@
 # Test file generation
 # By J. Stuart McMurray
 # Created 20250201
-# Last Modified 20250311
+# Last Modified 20250407
 
-set -euo pipefail
+set -uo pipefail
 
 . ./t/shmore.subr
 
@@ -26,7 +26,7 @@ test_gen() {
         # Temporary directory for files
         TD=$(mktemp -d)
         tap_ok "$?" "Made temporary directory" "$0" $LINENO
-        trap 'rm -rf $TD; tap_done_testing' EXIT # Make sure it's removed
+        trap 'rm -rf "$TD"; tap_done_testing' EXIT # Make sure it's removed
 
         # Generate the files
         go run . \
