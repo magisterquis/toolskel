@@ -4,7 +4,7 @@
 # Make sure our Makefile is the same as what's generated
 # By J. Stuart McMurray
 # Created 20250222
-# Last Modified 20250326
+# Last Modified 20250407
 
 set -uo pipefail
 
@@ -40,7 +40,7 @@ for F in $NEW $CURRENT; do
 done
 
 # Make sure it's close enough to ours.
-GOT="$(diff "$CURRENT" "$NEW")"
+GOT="$(diff -u "$CURRENT" "$NEW")"
 tap_is "$GOT" "" "Current and generated Makefiles the same" "$0" $LINENO
 
 # Make sure the long line check works.
