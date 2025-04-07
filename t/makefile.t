@@ -14,7 +14,7 @@ tap_plan 8
 
 # Get the sort of Makefile we expect.
 TMPD=$(mktemp -td)
-trap 'rm -rf ${TMPD}; tap_done_testing' EXIT
+trap 'R=$?; rm -rf "$TMPD"; (exit $R); tap_done_testing' EXIT
 go run . -quiet -dir "$TMPD" -makefile
 tap_ok "$?" "Program ran" "$0" $LINENO
 NEW="$TMPD/Makefile"
