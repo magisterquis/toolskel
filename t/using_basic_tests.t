@@ -6,28 +6,29 @@
 # Created 20250310
 # Last Modified 20250316
 
-set -euo pipefail
+set -uo pipefail
 
 . ./t/shmore.subr
 
 tap_plan 3
 
 # Filenames
-TESTF="t/basic_tests.t"
-WANTF="$(mktemp -t want.tmp.XXXXXXXXXX)"
-HAVEF="$(mktemp -t have.tmp.XXXXXXXXXX)"
-trap 'rm $WANTF $HAVEF; tap_done_testing' EXIT
+TBTF="t/basic_tests.t"
+GENF="$(mktemp -t gen.tmp.XXXXXXXXXX)"
+CURF="$(mktemp -t cur.tmp.XXXXXXXXXX)"
+AWKP="NR < 5 || 7 < NR"
+trap 'rm $GENF $CURF; tap_done_testing' EXIT
 
 # Get the sort of basic_tests.t we expect.
-go run . -quiet -txtar -basic-tests | tail -n +10 >$WANTF
-tap_ok "$?" "Generated headerles $TESTF in $WANTF" "$0" $LINENO
+go run . -quiet -txtar -basic-tests | tail -n +3 | awk "$AWKP" >$GENF
+tap_ok "$?" "Generated interpolatedless $TBTF in $GENF" "$0" $LINENO
 
 # And get ours, less the header.
-tail -n +8 "$TESTF" >$HAVEF
-tap_ok "$?" "Put headerless $TESTF in $HAVEF" "$0" $LINENO
+awk "$AWKP" "$TBTF" >$CURF
+tap_ok "$?" "Put nameless/dateless $TBTF in $CURF" "$0" $LINENO
 
 # Make sure it's close enough to ours.
-GOT="$(diff -u "$HAVEF" "$WANTF" ||:)"
-tap_is "$GOT" "" "Current and generated $TESTF the same" "$0" $LINENO
+GOT="$(diff -u "$GENF" "$CURF" ||:)"
+tap_is "$GOT" "" "Current and generated $TBTF the same" "$0" $LINENO
 
 # vim: ft=sh
