@@ -7,6 +7,7 @@
 BINNAME       != basename $$(pwd)
 GOBUILDFLAGS   = -trimpath -ldflags "-w -s"
 GOTESTFLAGS   += -timeout 3s
+SHMORESUBR     = t/shmore.subr
 SHMOREURL      = https://raw.githubusercontent.com/magisterquis/shmore/refs/heads/master/shmore.subr
 
 .PHONY: all build test gotest provetest help install update clean
@@ -40,9 +41,16 @@ provetest: ## Run tests with prove(1) if ./t exists
 .endif
 
 update: ## Fetch the latest Shmore and up-to-date Go things
-	curl --fail --show-error --silent --output t/shmore.subr ${SHMOREURL}
-	go get go
-	go get -u
+	curl\
+		--fail\
+		--show-error\
+		--silent\
+		--output ${SHMORESUBR}.new\
+		${SHMOREURL}
+	diff -q ${SHMORESUBR} ${SHMORESUBR}.new >/dev/null &&\
+		rm ${SHMORESUBR}.new ||\
+		mv ${SHMORESUBR}.new ${SHMORESUBR}
+	go get -t -u go ./...
 	go mod tidy
 
 install: ## Install to GOBIN ($GOPATH/bin or $HOME/go/bin)
