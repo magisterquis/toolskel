@@ -1,14 +1,12 @@
-# Makefile
-# Build txtar testdata
+# updatemacros.mk
+# Build macro-generated testdata
 # By J. Stuart McMurray
 # Created 20250310
-# Last Modified 20250310
+# Last Modified 20250407
 
 # Files which need to be built
 MACROFILES != find . -name '*.m4'
 SHMORE      = ../../shmore.subr
-
-.m4: # This is silly
 
 all::
 .PHONY: all
@@ -21,4 +19,3 @@ ${FN:R}: ${SHMORE} ${FN}
 	mv $@.tmp $@
 all:: ${FN:R}
 .endfor
-
