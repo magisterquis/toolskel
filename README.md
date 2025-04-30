@@ -1,3 +1,10 @@
+REWRITE INBOUND
+===============
+
+Have a look at
+[the rewrite_20250130 branch](https://github.com/magisterquis/toolskel/tree/rewrite_20250130),
+which will be the master branch soon.
+
 Tool Skeleton Generator
 =======================
 Generates boilerplate for small tools written in Go.
