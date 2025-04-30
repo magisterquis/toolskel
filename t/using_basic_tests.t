@@ -4,7 +4,7 @@
 # Make sure our basic_tests.t is the same as what's generated
 # By J. Stuart McMurray
 # Created 20250310
-# Last Modified 20250407
+# Last Modified 20250316
 
 set -uo pipefail
 
@@ -17,7 +17,7 @@ TBTF="t/basic_tests.t"
 GENF="$(mktemp -t gen.tmp.XXXXXXXXXX)"
 CURF="$(mktemp -t cur.tmp.XXXXXXXXXX)"
 AWKP="NR < 5 || 7 < NR"
-trap 'R=$?; rm "$GENF" "$CURF"; (exit $R); tap_done_testing' EXIT
+trap 'rm $GENF $CURF; tap_done_testing' EXIT
 
 # Get the sort of basic_tests.t we expect.
 go run . -quiet -txtar -basic-tests | tail -n +3 | awk "$AWKP" >$GENF

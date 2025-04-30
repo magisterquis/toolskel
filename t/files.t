@@ -26,7 +26,7 @@ test_gen() {
         # Temporary directory for files
         TD=$(mktemp -d)
         tap_ok "$?" "Made temporary directory" "$0" $LINENO
-        trap 'R=$?; rm -rf "$TD"; (exit $R); tap_done_testing' EXIT
+        trap 'rm -rf "$TD"; tap_done_testing' EXIT # Make sure it's removed
 
         # Generate the files
         go run . \

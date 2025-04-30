@@ -12,17 +12,9 @@ set -uo pipefail
 
 tap_plan 5
 
-set -e # This all needs to work
-GOTF=$(mktemp -t) # Command output
-TD=$(mktemp -d)   # Project directory
-trap 'R=$?; rm -rf "$GOTF" "$TD"; (exit $R); tap_done_testing' EXIT
-# Set up a go project with old dependencies
-cp -r t/testdata/go_updates/old_versions/* $TD
-mkdir "$TD/t"
-cp t/shmore.subr "$TD/t/"
-tap_pass "Put go project in $TD" "$0" $LINENO
-set +e
+GOTF=$(mktemp -t)  # Command output
 WANTF=$(mktemp -t) # What we want
+trap 'R=$?; rm "$GOTF" "$WANTF"; (exit $R); tap_done_testing' EXIT
 
 # diff_is makes sure $1 and stdin (i.e. want) are the same, but with diff
 #
@@ -36,6 +28,16 @@ diff_is() {
         GOT=$(diff -u "/dev/stdin" "$GOTF")
         tap_is "$GOT" "" "$2" "$3" "$4"
 }
+
+# Set up a go project with old dependencies
+set -e # This all needs to work
+TD=$(mktemp -d)
+trap 'rm -rf "$TD"; tap_done_testing' EXIT # Make sure it's removed
+cp -r t/testdata/go_updates/old_versions/* $TD
+mkdir "$TD/t"
+cp t/shmore.subr "$TD/t/"
+tap_pass "Put go project in $TD" "$0" $LINENO
+set +e
 
 # Add our magic makefile and test
 go run . -dir "$TD" -quiet -makefile -basic-tests 2>&1 |
