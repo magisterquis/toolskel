@@ -4,7 +4,7 @@
 # Make sure our code is up-to-date and doesn't have debug things.
 # By J. Stuart McMurray
 # Created 20250311
-# Last Modified 20250407
+# Last Modified 20250504
 
 set -uo pipefail
 
@@ -14,9 +14,9 @@ NTEST=6
 tap_plan "$NTEST"
 
 # Make sure we didn't leave any stray DEBUGs or TAP_TODOs lying about.
-GOT=$(egrep -InR '#[[:space:]]*DEBUG' | sort -u)
+GOT=$(egrep -InR '(#|\*)[[:space:]]*()DEBUG' | sort -u)
 tap_is "$GOT" "" "No files with DEBUG comments" "$0" $LINENO
-GOT=$(egrep -InR 'TAP_TODO[=]' t/*.t | sort -u)
+GOT=$(egrep -In  'TAP_TODO[=]' t/*.t | sort -u)
 tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 
 # These checks assume we're writing a Go program.
