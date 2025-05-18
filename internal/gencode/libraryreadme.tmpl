@@ -1,9 +1,10 @@
+{{- /*
+     * library.tmpl
+     * Emit a Go library README skeleton
+     * By J. Stuart McMurray
+     * Created 20250201
+     * Last Modified 20250518
+     */ -}}
 {{ .Name }}
 {{ re_replace "." "=" .Name }}
 {{ .Description }}
-
-Example
--------
-```go
-TODO: Finish this
-```

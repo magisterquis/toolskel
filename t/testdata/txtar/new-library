@@ -19,12 +19,6 @@ checks = ["all", "-ST1017"]
 something
 =========
 A cool Something
-
-Example
--------
-```go
-TODO: Finish this
-```
 -- something_test.go --
 package something
 
