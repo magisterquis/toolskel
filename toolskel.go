@@ -6,7 +6,7 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20250316
+ * Last Modified 20250518
  */
 
 import (
@@ -18,6 +18,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"runtime/debug"
 	"slices"
 	"strings"
 	"time"
@@ -148,12 +149,14 @@ func main() {
 		fmt.Fprintf(
 			os.Stderr,
 			`Usage: %s [options] [description...]
+Version %s
 
 Generates boilerplate Go projects.  Go source files will be named name.go.
 
 Options:
 `,
 			filepath.Base(os.Args[0]),
+			buildVersion(),
 		)
 		flag.PrintDefaults()
 	}
@@ -340,4 +343,14 @@ func defaultName() string {
 	}
 	return filepath.Base(wd)
 
+}
+
+// buildVersion returns a binary version, or "unknown" if no version
+// information was available.
+func buildVersion() string {
+	bi, ok := debug.ReadBuildInfo()
+	if !ok {
+		return "unknown"
+	}
+	return bi.Main.Version
 }
