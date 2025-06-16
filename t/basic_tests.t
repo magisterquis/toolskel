@@ -4,7 +4,7 @@
 # Make sure our code is up-to-date and doesn't have debug things.
 # By J. Stuart McMurray
 # Created 20250311
-# Last Modified 20250504
+# Last Modified 20250616
 
 set -uo pipefail
 
@@ -22,7 +22,7 @@ tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 # These checks assume we're writing a Go program.
 if [[ -f ./go.mod ]]; then
         # TMPD is where we'll put our temporary program
-        TMPD=$(mktemp -td)
+        TMPD=$(mktemp -d)
         trap 'rm -rf ${TMPD}; tap_done_testing' EXIT
 
         # Make sure we're not using MQD.

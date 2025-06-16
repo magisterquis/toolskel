@@ -3,7 +3,7 @@
      * Template for a TAP test to check for mqd and DEBUG comments
      * By J. Stuart McMurray
      * Created 20250310
-     * Last Modified 20250504
+     * Last Modified 20250616
      */ -}}
 #!/bin/ksh
 #
@@ -29,7 +29,7 @@ tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 # These checks assume we're writing a Go program.
 if [[ -f ./go.mod ]]; then
         # TMPD is where we'll put our temporary program
-        TMPD=$(mktemp -td)
+        TMPD=$(mktemp -d)
         trap 'rm -rf ${TMPD}; tap_done_testing' EXIT
 
         # Make sure we're not using MQD.

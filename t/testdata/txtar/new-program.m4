@@ -153,7 +153,7 @@ tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 # These checks assume we're writing a Go program.
 if [[ -f ./go.mod ]]; then
         # TMPD is where we'll put our temporary program
-        TMPD=$(mktemp -td)
+        TMPD=$(mktemp -d)
         trap 'rm -rf ${TMPD}; tap_done_testing' EXIT
 
         # Make sure we're not using MQD.
