@@ -18,8 +18,7 @@ import (
 	"path/filepath"
 )
 
-func main() { os.Exit(rmain()) }
-func rmain() int {
+func main() {
 	/* Command-line flags. */
 	var (
 	/* TODO: Add flags. */
@@ -40,8 +39,6 @@ Options:
 	flag.Parse()
 
 	/* TODO: Meat and Potatoes. */
-
-	return 0
 }
 -- Makefile --
 # Makefile
