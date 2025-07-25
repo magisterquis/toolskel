@@ -10,16 +10,17 @@ GOTESTFLAGS   += -timeout 3s
 SHMORESUBR     = t/shmore.subr
 SHMOREURL      = https://raw.githubusercontent.com/magisterquis/shmore/refs/heads/master/shmore.subr
 
-.PHONY: all build test gotest provetest help install update clean
-
 all: test build ## Build ALL the things (default)
+.PHONY: all
 
 ${BINNAME}:
 	go build ${GOBUILDFLAGS} -o ${BINNAME}
 
 build: ${BINNAME}
+.PHONY: build
 
 test: gotest provetest ## Run ALL the tests
+.PHONY: test
 
 gotest: ## Run go-specific tests
 	go test ${GOBUILDFLAGS} ${GOTESTFLAGS} ./...
@@ -34,11 +35,13 @@ gotest: ## Run go-specific tests
 		/.{80,}/\
 			{ print "Long usage line: " $$0; exit 1 }\
 	'
+.PHONY: gotest
 
 provetest: ## Run tests with prove(1) if ./t exists
 .if exists(./t/)
 	prove -It --directives
 .endif
+.PHONY: provetest
 
 update: ## Fetch the latest Shmore and up-to-date Go things
 	curl\
@@ -52,13 +55,17 @@ update: ## Fetch the latest Shmore and up-to-date Go things
 		mv ${SHMORESUBR}.new ${SHMORESUBR}
 	go get -t -u go ./...
 	go mod tidy
+.PHONY: update
 
 install: ## Install to GOBIN ($GOPATH/bin or $HOME/go/bin)
 	go install ${GOBUILDFLAGS}
+.PHONY: install
 
 clean: ## Remove built things
 	rm -rf ${BINNAME}
+.PHONY: clean
 
 help: .NOTMAIN ## This help
 	@perl -ne '/^(\S+?):+.*?##\s*(.*)/&&print"$$1\t-\t$$2\n"' \
 		${MAKEFILE_LIST} | column -ts "$$(printf "\t")"
+.PHONY: help
