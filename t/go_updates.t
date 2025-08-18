@@ -4,7 +4,7 @@
 # Make sure the Checker of Go Updates works
 # By J. Stuart McMurray
 # Created 20250407
-# Last Modified 20250407
+# Last Modified 20250818
 
 set -uo pipefail
 
@@ -53,25 +53,26 @@ GOT=$(cd "$TD" &&
         HARNESS_ACTIVE=1 ksh ./t/basic_tests.t 2>&1 |
         sed -E 's/ -> [^[:space:]]+/ -> XXX/')
 diff_is "$GOT" "Old versions detected" "$0" $LINENO <<'_eof'
-1..6
-ok 1 - No files with DEBUG comments
-ok 2 - No TAP_TODO's
-ok 3 - Not using github.com/magisterquis/mqd
-ok 4 - Running with -h exits happily
-not ok 5 - Packages up-to-date
+1..7
+ok 1 - No files with unexpected DEBUG comments
+ok 2 - No files with unexpected TODO comments
+ok 3 - No TAP_TODO's
+ok 4 - Not using github.com/magisterquis/mqd
+ok 5 - Running with -h exits happily
+not ok 6 - Packages up-to-date
 
 #   Failed test 'Packages up-to-date'
-#   at ./t/basic_tests.t line 46.
+#   at ./t/basic_tests.t line 63.
 #          got: 'golang.org/x/net: v0.37.0 -> XXX
 # golang.org/x/text: v0.23.0 -> XXX
 #     expected: ''
-not ok 6 - Latest Go version will be used
+not ok 7 - Latest Go version will be used
 
 #   Failed test 'Latest Go version will be used'
-#   at ./t/basic_tests.t line 56.
+#   at ./t/basic_tests.t line 73.
 #          got: 'go 1.24.1 -> XXX
 #     expected: ''
-# Looks like you failed 2 tests of 6.
+# Looks like you failed 2 tests of 7.
 _eof
 
 # Update ALL the things.
@@ -87,13 +88,14 @@ _eof
 # Make sure the updates worked.
 GOT=$(cd "$TD" && ksh ./t/basic_tests.t 2>&1)
 diff_is "$GOT" "Everything up-to-date" "$0" $LINENO <<'_eof'
-1..6
-ok 1 - No files with DEBUG comments
-ok 2 - No TAP_TODO's
-ok 3 - Not using github.com/magisterquis/mqd
-ok 4 - Running with -h exits happily
-ok 5 - Packages up-to-date
-ok 6 - Latest Go version will be used
+1..7
+ok 1 - No files with unexpected DEBUG comments
+ok 2 - No files with unexpected TODO comments
+ok 3 - No TAP_TODO's
+ok 4 - Not using github.com/magisterquis/mqd
+ok 5 - Running with -h exits happily
+ok 6 - Packages up-to-date
+ok 7 - Latest Go version will be used
 _eof
 
 # vim: ft=sh

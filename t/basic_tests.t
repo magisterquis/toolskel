@@ -3,20 +3,37 @@
 # basic_tests.t
 # Make sure our code is up-to-date and doesn't have debug things.
 # By J. Stuart McMurray
-# Created 20250311
-# Last Modified 20250725
+# Created 20250818
+# Last Modified 20250818
 
-set -uo pipefail
+set -euo pipefail
 
 . t/shmore.subr
 
-NTEST=6
+NTEST=7
 tap_plan "$NTEST"
 
+# OK_DEBUG and OK_TODO, if exant, contain grep output lines to be ignored
+# in the first two tests.
+OK_DEBUG=t/testdata/basic_tests/debug_ok
+OK_TODO=t/testdata/basic_tests/todo_ok
+
 # Make sure we didn't leave any stray DEBUGs or TAP_TODOs lying about.
-GOT=$(grep -EInR '(#|\*)[[:space:]]*()DEBUG' | sort -u)
-tap_is "$GOT" "" "No files with DEBUG comments" "$0" $LINENO
-GOT=$(grep -EIn  'TAP_TODO[=]' t/*.t | sort -u)
+GOT=$(grep -EInR '(#|\*|^)[[:space:]]*()DEBUG' | sort -u |
+        grep -Ev '^t/shmore.subr:[[:digit:]]+:' |
+        grep -Ev "^$OK_DEBUG:[[:digit:]]+" ||:)
+if [[ -f "$OK_DEBUG" ]]; then
+        GOT=$(print -r "$GOT" | grep -Fvf "$OK_DEBUG" ||:);
+fi
+tap_is "$GOT" "" "No files with unexpected DEBUG comments" "$0" $LINENO
+GOT=$(grep -EInR '(#|\*|^)[[:space:]]*()TODO' | sort -u |
+        grep -Ev '^(\.git/hooks/[^:]+\.sample|t/shmore.subr):[[:digit:]]+:' |
+        grep -Ev "^$OK_DEBUG:[[:digit:]]+" ||:)
+if [[ -f "$OK_TODO" ]]; then
+        GOT=$(print -r "$GOT" | grep -Fvf "$OK_TODO" ||:);
+fi
+tap_is "$GOT" "" "No files with unexpected TODO comments" "$0" $LINENO
+GOT=$(grep -EIn  'TAP_TODO[=]' t/*.t | sort -u ||:)
 tap_is "$GOT" "" "No TAP_TODO's" "$0" $LINENO
 
 # These checks assume we're writing a Go program.
@@ -27,7 +44,7 @@ if [[ -f ./go.mod ]]; then
 
         # Make sure we're not using MQD.
         GOT="$(go run . -h </dev/null 2>&1 |
-                grep -E 'MQD DEBUG PACKAGE LOADED$')"
+                grep -E 'MQD DEBUG PACKAGE LOADED$' ||:)"
         tap_is "$GOT" "" "Not using github.com/magisterquis/mqd" "$0" $LINENO
 
         # Should get happy help output.  We can't use go run here because it
@@ -55,7 +72,7 @@ if [[ -f ./go.mod ]]; then
                 -m go)"
         tap_is "$GOT" "" "Latest Go version will be used" "$0" $LINENO
 else
-        tap_skip "Not a Go program" $((NTEST-2))
+        tap_skip "Not a Go program" $((NTEST-3))
 fi
 
 # vim: ft=sh
