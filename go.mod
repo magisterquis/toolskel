@@ -1,9 +1,9 @@
 module github.com/magisterquis/toolskel
 
-go 1.25.0
+go 1.26.0
 
 require (
-	golang.org/x/net v0.43.0
-	golang.org/x/text v0.28.0
-	golang.org/x/tools v0.36.0
+	golang.org/x/net v0.50.0
+	golang.org/x/text v0.34.0
+	golang.org/x/tools v0.42.0
 )
