@@ -5,7 +5,7 @@ package gencode
  * Tests for gencode.go
  * By J. Stuart McMurray
  * Created 20250131
- * Last Modified 20250310
+ * Last Modified 20260217
  */
 
 import (
@@ -41,7 +41,7 @@ func Test_HaveAllTmplFiles(t *testing.T) {
 	want := len(des) + 2 /* For ToFile and Shmore. */
 
 	/* Work out how many template functions we do have. */
-	if got := reflect.TypeOf(Params{}).NumMethod(); got != want {
+	if got := reflect.TypeFor[Params]().NumMethod(); got != want {
 		t.Errorf(
 			"Incorrect number of Template execution methods:\n"+
 				" got: %d\n"+

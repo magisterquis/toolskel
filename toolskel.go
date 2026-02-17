@@ -6,7 +6,7 @@ package main
  * Generate command boilerplate
  * By J. Stuart McMurray
  * Created 20230204
- * Last Modified 20250518
+ * Last Modified 20260217
  */
 
 import (
@@ -208,10 +208,10 @@ Options:
 	/* Prep a txtar archive, if we're doing that. */
 	var ta txtar.Archive
 	if *toTxtar {
-		ta.Comment = []byte(fmt.Sprintf(
+		ta.Comment = fmt.Appendf(nil,
 			"Created by toolskel %s",
 			time.Now().Format(time.RFC3339),
-		))
+		)
 	}
 
 	/* Generate ALL the things. */
