@@ -45,17 +45,19 @@ tap_is "$GOT" "" "Current and generated Makefiles the same" "$0" $LINENO
 
 # Make sure the long line check works.
 cp t/testdata/makefile/long_usage_line.go "$TMPD"
-GOT=$(cd "$TMPD" && go mod init makefile_t 2>/dev/null && make -i gotest)
-WANT="$(cat <<'_eof'
+RET=$(diff -u -L got -L want /dev/fd/3 /dev/fd/4 3<<_eof3 4<<'_eof4' ||:
+$(cd "$TMPD" && go mod init makefile_t 2>/dev/null && make -i gotest)
+_eof3
 go test -trimpath -ldflags "-w -s" -timeout 3s ./...
 ?   	makefile_t	[no test files]
 go vet -trimpath -ldflags "-w -s" ./...
-staticcheck ./...
+! which staticcheck >/dev/null || staticcheck ./...
+[[ -z "$(go fix -diff ./... | tee /dev/stderr)" ]]
 go run -trimpath -ldflags "-w -s" . -h 2>&1 | awk ' /^Options:$|MQD DEBUG PACKAGE LOADED$/ { exit } /^Usage: / { sub(/^Usage: [^[:space:]]+\//, "Usage: ") } /.{80,}/ { print "Long usage line: " $0; exit 1 } '
 Long usage line: In taberna quando sumus non curamus quid sit humus sed ad ludum properamus cui semper insudamus.
 *** Error 1 in target 'gotest' (ignored)
-_eof
-)"
-tap_is "$GOT" "$WANT" "Long usage line detected" "$0" $LINENO
+_eof4
+)
+tap_is "$RET" "" "Long usage line detected" "$0" $LINENO
 
 # vim: ft=sh

@@ -2,7 +2,7 @@
 # Build toolskel
 # By J. Stuart McMurray
 # Created 20250202
-# Last Modified 20250725
+# Last Modified 20260407
 
 BINNAME       != basename $$(pwd)
 GOBUILDFLAGS   = -trimpath -ldflags "-w -s"
@@ -25,7 +25,8 @@ test: gotest provetest ## Run ALL the tests
 gotest: ## Run go-specific tests
 	go test ${GOBUILDFLAGS} ${GOTESTFLAGS} ./...
 	go vet ${GOBUILDFLAGS} ./...
-	staticcheck ./...
+	! which staticcheck >/dev/null || staticcheck ./...
+	[[ -z "$$(go fix -diff ./... | tee /dev/stderr)" ]]
 	go run ${GOBUILDFLAGS} . -h 2>&1 |\
 	awk '\
 		/^Options:$$|MQD DEBUG PACKAGE LOADED$$/\

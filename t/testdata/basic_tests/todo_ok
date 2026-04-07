@@ -14,13 +14,13 @@ t/testdata/files/program/something.go:39:	/* TODO: Meat and Potatoes. */
 t/testdata/files/shmore/t/shmore.subr:654:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
 t/testdata/makefile/long_usage_line.go:23:	/* TODO: Add flags. */
 t/testdata/makefile/long_usage_line.go:42:	/* TODO: Meat and Potatoes. */
-t/testdata/txtar/new-program.m4:129:TODO: Usage
+t/testdata/txtar/new-program.m4:130:TODO: Usage
 t/testdata/txtar/new-program.m4:24:	/* TODO: Add flags. */
 t/testdata/txtar/new-program.m4:41:	/* TODO: Meat and Potatoes. */
-t/testdata/txtar/new-program:128:TODO: Usage
+t/testdata/txtar/new-program:129:TODO: Usage
 t/testdata/txtar/new-program:23:	/* TODO: Add flags. */
 t/testdata/txtar/new-program:40:	/* TODO: Meat and Potatoes. */
-t/testdata/txtar/new-program:867:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
+t/testdata/txtar/new-program:868:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
 t/testdata/txtar/program-readme:13:TODO: Usage
 t/testdata/txtar/program:23:	/* TODO: Add flags. */
 t/testdata/txtar/program:40:	/* TODO: Meat and Potatoes. */
