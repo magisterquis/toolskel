@@ -4,7 +4,7 @@
 # Make sure the Checker of Go Updates works
 # By J. Stuart McMurray
 # Created 20250407
-# Last Modified 20250818
+# Last Modified 20260407
 
 set -uo pipefail
 
@@ -80,6 +80,7 @@ GOT=$(make -s -C $TD update 2>&1 |
         awk '! /^go: downloading/' |
         sed -E 's/ => [^[:space:]]+/ => XXX/')
 diff_is "$GOT" "Updated happily" "$0" "$LINENO" <<'_eof'
+go: updating go.mod requires go >= 1.26.2; switching to go1.26.2
 go: upgraded go 1.24.1 => XXX
 go: upgraded golang.org/x/net v0.37.0 => XXX
 go: upgraded golang.org/x/text v0.23.0 => XXX

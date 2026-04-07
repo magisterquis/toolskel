@@ -7,11 +7,11 @@ internal/gencode/testdata/TestParams_Generation/zero/Programreadme_want.md:12:TO
 t/testdata/files/new-program/README.md:12:TODO: Usage
 t/testdata/files/new-program/something.go:22:	/* TODO: Add flags. */
 t/testdata/files/new-program/something.go:39:	/* TODO: Meat and Potatoes. */
-t/testdata/files/new-program/t/shmore.subr:635:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
+t/testdata/files/new-program/t/shmore.subr:654:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
 t/testdata/files/program-readme/README.md:12:TODO: Usage
 t/testdata/files/program/something.go:22:	/* TODO: Add flags. */
 t/testdata/files/program/something.go:39:	/* TODO: Meat and Potatoes. */
-t/testdata/files/shmore/t/shmore.subr:635:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
+t/testdata/files/shmore/t/shmore.subr:654:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
 t/testdata/makefile/long_usage_line.go:23:	/* TODO: Add flags. */
 t/testdata/makefile/long_usage_line.go:42:	/* TODO: Meat and Potatoes. */
 t/testdata/txtar/new-program.m4:129:TODO: Usage
@@ -20,8 +20,8 @@ t/testdata/txtar/new-program.m4:41:	/* TODO: Meat and Potatoes. */
 t/testdata/txtar/new-program:128:TODO: Usage
 t/testdata/txtar/new-program:23:	/* TODO: Add flags. */
 t/testdata/txtar/new-program:40:	/* TODO: Meat and Potatoes. */
-t/testdata/txtar/new-program:848:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
+t/testdata/txtar/new-program:867:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
 t/testdata/txtar/program-readme:13:TODO: Usage
 t/testdata/txtar/program:23:	/* TODO: Add flags. */
 t/testdata/txtar/program:40:	/* TODO: Meat and Potatoes. */
-t/testdata/txtar/shmore:636:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
+t/testdata/txtar/shmore:655:                _tap_msg="${_tap_msg} # TODO $TAP_TODO"
