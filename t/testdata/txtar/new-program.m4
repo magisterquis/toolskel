@@ -164,7 +164,7 @@ fi
 tap_is "$GOT" "" "No files with unexpected DEBUG comments" "$0" $LINENO
 GOT=$(grep -EInR '(#|\*|^)[[:space:]]*()TODO' | sort -u |
         grep -Ev '^(\.git/hooks/[^:]+\.sample|t/shmore.subr):[[:digit:]]+:' |
-        grep -Ev "^$OK_DEBUG:[[:digit:]]+" ||:)
+        grep -Ev "^$OK_TODO:[[:digit:]]+" ||:)
 if [[ -f "$OK_TODO" ]]; then
         GOT=$(print -r "$GOT" | grep -Fvf "$OK_TODO" ||:);
 fi

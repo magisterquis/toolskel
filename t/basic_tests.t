@@ -4,7 +4,7 @@
 # Make sure our code is up-to-date and doesn't have debug things.
 # By J. Stuart McMurray
 # Created 20250818
-# Last Modified 20250818
+# Last Modified 20260411
 
 set -euo pipefail
 
@@ -28,7 +28,7 @@ fi
 tap_is "$GOT" "" "No files with unexpected DEBUG comments" "$0" $LINENO
 GOT=$(grep -EInR '(#|\*|^)[[:space:]]*()TODO' | sort -u |
         grep -Ev '^(\.git/hooks/[^:]+\.sample|t/shmore.subr):[[:digit:]]+:' |
-        grep -Ev "^$OK_DEBUG:[[:digit:]]+" ||:)
+        grep -Ev "^$OK_TODO:[[:digit:]]+" ||:)
 if [[ -f "$OK_TODO" ]]; then
         GOT=$(print -r "$GOT" | grep -Fvf "$OK_TODO" ||:);
 fi
